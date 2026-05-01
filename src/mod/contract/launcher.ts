@@ -42,7 +42,7 @@ export interface ILauncherConfig {
 /**
  * 启动器能力接口
  */
-export interface ILauncherAbility {
+export interface ILauncherAbility extends IAbility {
   /** 应用名称 */
   readonly app: string;
   /** 应用版本号 */
@@ -75,5 +75,5 @@ export interface ILauncherAbility {
  * 负责管理启动参数
  */
 export interface ILauncher extends IMod {
-  get ability(): ILauncherAbility & IAbility;
+  get ability(): ILauncherAbility;
 }

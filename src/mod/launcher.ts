@@ -2,14 +2,13 @@ import { sys } from 'cc';
 
 import { access } from '../foundation/access';
 import { Journal } from '../journal';
-import { IAbility } from './contract';
 import { Build, ILauncher, ILauncherAbility, ILauncherConfig, Language } from './contract/launcher';
 import { BaseMod } from './mod';
 
 /**
  * 启动器奥术实现
  */
-class LauncherAbility implements ILauncherAbility, IAbility {
+class LauncherAbility implements ILauncherAbility {
   /** 启动参数 */
   private readonly _config: ILauncherConfig;
 
@@ -34,8 +33,15 @@ class LauncherAbility implements ILauncherAbility, IAbility {
       if (query.length == 2) {
         const pairs = query[1].split('&');
         for (let i = 0, l = pairs.length, key: string, value: string; i < l; i++) {
-          [key, value] = pairs[i].split('=');
-          this._config[key] = decodeURIComponent(value || '');
+          const eq = pairs[i].indexOf('=');
+          if (eq === -1) continue;
+          key = pairs[i].substring(0, eq);
+          value = pairs[i].substring(eq + 1);
+          try {
+            this._config[key] = decodeURIComponent(value);
+          } catch {
+            this._config[key] = value;
+          }
         }
       }
     }
@@ -92,7 +98,7 @@ class LauncherAbility implements ILauncherAbility, IAbility {
   }
 
   public get supportedLanguages(): Language[] {
-    return this._config.language;
+    return [...this._config.language];
   }
 }
 
