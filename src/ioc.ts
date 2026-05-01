@@ -37,6 +37,10 @@ class IoC {
    * @param ctor 模块构造
    */
   public register(ctor: IModConstructor) {
+    if (typeof ctor.Trait !== 'string' || !ctor.Trait) {
+      throw new IocError(IoCCode.NotRegistered, '模块必须声明 static Trait');
+    }
+
     const trait = ctor.Trait;
 
     if (this._mod.has(trait)) {

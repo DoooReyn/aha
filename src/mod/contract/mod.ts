@@ -1,5 +1,8 @@
 /**
  * 模块接口
+ *
+ * @note 模块必须声明 static Trait
+ * @note 模块必须声明 static InitArgs
  */
 export interface IMod {
   /** 标识 */
@@ -33,7 +36,7 @@ export interface IModConstructor<M extends IMod = IMod, P extends unknown[] = un
   /** 构造 */
   new (): M;
   /** 标识 */
-  Trait: string;
+  readonly Trait: string;
   /** 模块能力入参 */
   readonly InitArgs: P;
 }
