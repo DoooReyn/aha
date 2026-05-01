@@ -7,7 +7,7 @@ export interface IMod {
   /** 编号 */
   readonly no: number;
   /** 依赖 */
-  dependencies: Record<string, IAbility>;
+  readonly dependencies: Record<string, IAbility>;
   /** 生命周期: 登记 */
   onRegistered(): void;
   /** 生命周期: 准备工作 */

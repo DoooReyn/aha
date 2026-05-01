@@ -81,10 +81,15 @@ class IoC {
     }
 
     const mod = this._mod.get(trait);
-    mod.dependencies = dependencies.reduce((all: IMod['dependencies'], item) => {
-      all[item.Trait] = this.resolve(item);
-      return all;
-    }, {});
+    Object.defineProperty(mod, 'dependencies', {
+      value: dependencies.reduce((all: IMod['dependencies'], item) => {
+        all[item.Trait] = this.resolve(item);
+        return all;
+      }, {}),
+      enumerable: true,
+      configurable: false,
+      writable: false,
+    });
 
     await mod.onWork(...parameters);
 
