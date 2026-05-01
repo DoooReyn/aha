@@ -5,3 +5,4 @@ export default {
 
 export * from './ioc';
 export * from './journal';
+export * from './mod';
