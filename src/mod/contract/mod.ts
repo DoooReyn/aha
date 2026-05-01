@@ -21,7 +21,7 @@ export interface IMod {
   /** 是否启动状态 */
   get isLaunched(): boolean;
   /** 是否注销状态 */
-  get isUnRegistered(): boolean;
+  get isUnregistered(): boolean;
   /** 能力 */
   get ability(): IAbility;
 }

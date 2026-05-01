@@ -97,7 +97,7 @@ abstract class BaseMod<A extends IAbility> implements IMod {
     return this._state === State.Launched;
   }
 
-  public get isUnRegistered(): boolean {
+  public get isUnregistered(): boolean {
     return this._state === State.UnRegistered;
   }
 
