@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Cocos Creator build output
+build/
+native/
+temp/
+library/
+local/
+profiles/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other
+*.min.js
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg

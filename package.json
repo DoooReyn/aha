@@ -1,0 +1,28 @@
+{
+  "name": "@doooreyn/aha",
+  "version": "0.0.1",
+  "description": "aha framework for Cocos Creator 3.x",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && rollup -c rollup.config.mjs"
+  },
+  "keywords": [
+    "aha-framework",
+    "cocos",
+    "cocos-creator",
+    "2d-game-framework"
+  ],
+  "author": "DoooReyn",
+  "license": "MIT",
+  "packageManager": "pnpm@10.31.0",
+  "devDependencies": {
+    "@cocos/creator-types": "^3.8.7",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^25.6.0",
+    "rollup": "^4.60.2",
+    "rollup-plugin-dts": "^6.4.1",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1"
+  }
+}
