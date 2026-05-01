@@ -35,6 +35,19 @@ export enum JournalLevel {
 }
 
 /**
+ * 日志分级（分级排序）
+ *
+ * 按重要程度划分的日志级别。
+ */
+const JournalLevelN: Record<JournalLevel, number> = {
+  [JournalLevel.DEBUG]: 0,
+  [JournalLevel.INFO]: 1,
+  [JournalLevel.WARN]: 2,
+  [JournalLevel.ERROR]: 3,
+  [JournalLevel.FATAL]: 4,
+} as const;
+
+/**
  * 日志记录专员
  *
  * 每个 JournalCategory 对应一个记录专员，有相对独立的级别控制。
@@ -104,9 +117,8 @@ class JournalUnderling {
    * @returns 是否应该输出
    */
   private _shouldOutputAtInstanceLevel(level: JournalLevel): boolean {
-    const levels = [JournalLevel.DEBUG, JournalLevel.INFO, JournalLevel.WARN, JournalLevel.ERROR, JournalLevel.FATAL];
-    const levelIndex = levels.indexOf(level);
-    const minIndex = levels.indexOf(this._level);
+    const levelIndex = JournalLevelN[level];
+    const minIndex = JournalLevelN[this._level];
     return levelIndex >= minIndex;
   }
 
@@ -257,9 +269,8 @@ class Journal {
    * @returns 是否应该输出
    */
   public static ShouldOutputAtMainLevel(level: JournalLevel): boolean {
-    const levels = [JournalLevel.DEBUG, JournalLevel.INFO, JournalLevel.WARN, JournalLevel.ERROR, JournalLevel.FATAL];
-    const levelIndex = levels.indexOf(level);
-    const minIndex = levels.indexOf(this.MainLevel);
+    const levelIndex = JournalLevelN[level];
+    const minIndex = JournalLevelN[this.MainLevel];
     return levelIndex >= minIndex;
   }
 
@@ -327,4 +338,4 @@ class Journal {
 /**
  * 导出日志
  */
-export { Journal };
+export { Journal, type JournalUnderling };

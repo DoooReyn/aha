@@ -4,7 +4,7 @@
 export interface IMod {
   /** 标识 */
   readonly trait: string;
-  /** 编号 */
+  /** 编号（从 1 开始） */
   readonly no: number;
   /** 依赖 */
   readonly dependencies: Record<string, IAbility>;
@@ -13,7 +13,7 @@ export interface IMod {
   /** 生命周期: 启动 */
   onLaunched(...parameters: unknown[]): Promise<void>;
   /** 生命周期: 注销 */
-  onUnRegistered(): Promise<void>;
+  onUnregistered(): Promise<void>;
   /** 是否初始状态 */
   get isPrimitive(): boolean;
   /** 是否登记状态 */

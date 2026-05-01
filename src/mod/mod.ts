@@ -1,4 +1,4 @@
-import { IAbility, IMod } from './contact/mod';
+import { IAbility, IMod } from './contract/mod';
 
 /**
  * 模块状态
@@ -17,7 +17,7 @@ enum State {
 /**
  * 模块状态错误码
  */
-enum ErrorCode {
+enum ModCode {
   /** 模块非原始态 */
   NotPrimitive,
   /** 模块未登记 */
@@ -31,9 +31,9 @@ enum ErrorCode {
 /**
  * 错误构造
  */
-class ViolationError extends Error {
-  public constructor(public readonly code: ErrorCode) {
-    super(ErrorCode[code]);
+class ModError extends Error {
+  public constructor(public readonly code: ModCode) {
+    super(ModCode[code]);
   }
 }
 
@@ -58,7 +58,7 @@ abstract class BaseMod<A extends IAbility> implements IMod {
 
   public onRegistered(): void {
     if (!this.isPrimitive) {
-      throw new ViolationError(ErrorCode.NotPrimitive);
+      throw new ModError(ModCode.NotPrimitive);
     }
 
     this.didRegistered();
@@ -67,22 +67,21 @@ abstract class BaseMod<A extends IAbility> implements IMod {
 
   public async onLaunched(...parameters: unknown[]): Promise<void> {
     if (!this.isRegistered) {
-      throw new ViolationError(ErrorCode.NotRegistered);
+      throw new ModError(ModCode.NotRegistered);
     }
 
     await this.didLaunched();
-    this._state = State.Launched;
-
     this._ability = this.loadAbility(...parameters);
     await this._ability.attach();
+    this._state = State.Launched;
   }
 
-  public async onUnRegistered(): Promise<void> {
-    if (!this.isLaunched) throw new ViolationError(ErrorCode.NotLaunched);
+  public async onUnregistered(): Promise<void> {
+    if (!this.isLaunched) throw new ModError(ModCode.NotLaunched);
 
-    await this.didUnRegistered();
     this._ability.detach();
     this._ability = null;
+    await this.didUnregistered();
     this._state = State.UnRegistered;
   }
 
@@ -103,8 +102,8 @@ abstract class BaseMod<A extends IAbility> implements IMod {
   }
 
   public get ability(): A {
-    if (!this.isLaunched) throw new ViolationError(ErrorCode.NotLaunched);
-    if (!this._ability) throw new ViolationError(ErrorCode.AbilityNotLoaded);
+    if (!this.isLaunched) throw new ModError(ModCode.NotLaunched);
+    if (!this._ability) throw new ModError(ModCode.AbilityNotLoaded);
     return this._ability;
   }
 
@@ -115,7 +114,7 @@ abstract class BaseMod<A extends IAbility> implements IMod {
   protected async didLaunched(): Promise<void> {}
 
   /** 注销钩子 */
-  protected async didUnRegistered(): Promise<void> {}
+  protected async didUnregistered(): Promise<void> {}
 
   /** 装载能力 */
   protected abstract loadAbility(...parameters: unknown[]): A;

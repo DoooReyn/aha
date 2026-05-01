@@ -1,10 +1,10 @@
 import { Journal } from './journal';
-import { IMod, IModConstructor } from './mod/contact/mod';
+import { IMod, IModConstructor } from './mod/contract/mod';
 
 /**
  * 错误代码
  */
-enum ErrorCode {
+enum IoCCode {
   /** 重复登记 */
   Duplicated,
   /** 未登记 */
@@ -14,17 +14,19 @@ enum ErrorCode {
 /**
  * 错误构造
  */
-class ViolationError extends Error {
+class IocError extends Error {
   public constructor(
-    public readonly code: ErrorCode,
+    public readonly code: IoCCode,
     public readonly roster: string
   ) {
-    super(ErrorCode[code]);
+    super(IoCCode[code]);
   }
 }
 
 /**
  * 依赖容器
+ * @rule 模块必须先登记，再启动，最后注销。
+ * @rule 模块注销是调用者责任，请适当处理模块间依赖。
  */
 class IoC {
   /** 模块实例映射 */
@@ -38,7 +40,7 @@ class IoC {
     const trait = ctor.Trait;
 
     if (this._mod.has(trait)) {
-      throw new ViolationError(ErrorCode.Duplicated, trait);
+      throw new IocError(IoCCode.Duplicated, trait);
     }
 
     const mod = new ctor();
@@ -77,7 +79,7 @@ class IoC {
     const trait = ctor.Trait;
 
     if (!this._mod.has(trait)) {
-      throw new ViolationError(ErrorCode.NotRegistered, trait);
+      throw new IocError(IoCCode.NotRegistered, trait);
     }
 
     const mod = this._mod.get(trait);
@@ -103,11 +105,11 @@ class IoC {
   public unregister(ctor: IModConstructor | string) {
     const trait = typeof ctor === 'string' ? ctor : ctor.Trait;
     if (!this._mod.has(trait)) {
-      throw new ViolationError(ErrorCode.NotRegistered, trait);
+      throw new IocError(IoCCode.NotRegistered, trait);
     }
 
     const mod = this._mod.get(trait);
-    mod.onUnRegistered();
+    mod.onUnregistered();
     this._mod.delete(trait);
 
     Journal.Info(`注销 [${mod.no}] ${trait}`);
@@ -121,9 +123,9 @@ class IoC {
   public resolve<M extends IModConstructor>(ctor: M | string): InstanceType<M>['ability'] {
     const trait = typeof ctor === 'string' ? ctor : ctor.Trait;
     if (!this._mod.has(trait)) {
-      throw new ViolationError(ErrorCode.NotRegistered, trait);
+      throw new IocError(IoCCode.NotRegistered, trait);
     }
-    return this._mod.get(trait).ability;
+    return this._mod.get(trait).ability as InstanceType<M>['ability'];
   }
 }
 
