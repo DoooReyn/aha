@@ -56,6 +56,7 @@ npx prettier --write src/   # 格式化
 - 组件/类：PascalCase
 - 属性/方法：camelCase
 - 常量：UPPER_SNAKE_CASE
+- 静态类/命名空间方法：PascalCase（如 `Journal.Info`、`IoC.register`）
 - 动词选择：get/set/is/has/can/create/init/start/stop/update/render/handle/process
 
 ## 性能原则
@@ -78,6 +79,58 @@ Conventional Commits 格式：`<类型>(<范围>): <简短描述>`
 ## 分支策略
 
 Git Flow 模式：`main`（保护分支）→ `develop`（日常开发）→ `feat/*`（功能分支）→ `release/*`（发布准备）→ `hotfix/*`（紧急修复）
+
+## 核心架构
+
+### 三大核心模块
+
+| 模块                                | 职责                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------- |
+| **IoC 容器** (`src/ioc.ts`)         | 依赖注入容器，管理模块的登记、激活、注销和依赖解析。导出单例 `ioc`                    |
+| **Journal 日志** (`src/journal.ts`) | 分级分类日志系统，支持全局/分类级别控制、彩色输出。导出静态类 `Journal`               |
+| **Mod 模块体系** (`src/mod/`)       | 模块生命周期管理 + 能力（Ability）抽象。`BaseMod` 为抽象基类，`IAbility` 定义能力契约 |
+
+### 目录结构
+
+```
+src/
+├── index.ts              # 入口，统一导出
+├── ioc.ts                # IoC 依赖容器（单例 ioc）
+├── journal.ts            # 日志系统（静态类 Journal）
+└── mod/
+    ├── index.ts          # 模块导出
+    ├── mod.ts            # BaseMod 抽象基类
+    └── contract/
+        ├── index.ts      # 契约导出
+        └── mod.ts        # IMod / IModConstructor / IAbility 接口
+```
+
+### 模块生命周期
+
+```
+new Mod()          实例化（Primitive 状态）
+    ↓
+ioc.register()     登记 → onRegistered() → didRegistered()
+    ↓
+ioc.activate()     启动 → onLaunched()
+                      → didLaunched()      （子类启动钩子）
+                      → loadAbility()      （创建能力）
+                      → ability.attach()   （装载能力）
+    ↓
+ioc.resolve()      解析 → 返回模块 ability
+    ↓
+ioc.unregister()   注销 → onUnregistered()
+                      → ability.detach()   （卸载能力）
+                      → didUnregistered()  （子类注销钩子）
+```
+
+状态流转：`Primitive → Registered → Launched → UnRegistered`
+
+### IoC 容器使用规则
+
+- 模块必须先 `register`，再 `activate`，最后 `unregister`
+- `resolve` 仅在模块 `activate` 之后可用（模块处于 Launched 状态）
+- 模块注销是调用者责任，需自行处理模块间依赖顺序
 
 ## 特别注意
 
