@@ -6,7 +6,7 @@ import { CCInspectorFields, ICCInspector, ICCInspectorAbility, ICCInspectorManua
 import { BaseMod } from './mod';
 
 /**
- * 巡检器奥术实现
+ * 巡检器能力实现
  */
 class CCInspectorAbility implements IAbility, ICCInspectorAbility {
   private _container: Map<string, number>;
