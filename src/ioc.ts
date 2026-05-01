@@ -91,7 +91,7 @@ class IoC {
       writable: false,
     });
 
-    await mod.onWork(...parameters);
+    await mod.onLaunched(...parameters);
 
     Journal.Info(`激活 [${mod.no}] ${trait}`);
   }

@@ -10,16 +10,16 @@ export interface IMod {
   readonly dependencies: Record<string, IAbility>;
   /** 生命周期: 登记 */
   onRegistered(): void;
-  /** 生命周期: 准备工作 */
-  onWork(...parameters: unknown[]): Promise<void>;
+  /** 生命周期: 启动 */
+  onLaunched(...parameters: unknown[]): Promise<void>;
   /** 生命周期: 注销 */
-  onUnRegistered(): void;
+  onUnRegistered(): Promise<void>;
   /** 是否初始状态 */
-  get isRaw(): boolean;
+  get isPrimitive(): boolean;
   /** 是否登记状态 */
   get isRegistered(): boolean;
   /** 是否工作状态 */
-  get isWorking(): boolean;
+  get isLaunched(): boolean;
   /** 是否注销状态 */
   get isUnRegistered(): boolean;
   /** 工作能力 */
