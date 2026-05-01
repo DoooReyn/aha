@@ -69,12 +69,12 @@ class IoC {
    * 启动模块
    * @param ctor 模块构造
    * @param dependencies 依赖
-   * @param parameters 模块入参
+   * @param initArgs 模块能力入参
    */
   public async activate<M extends IMod, P extends unknown[]>(
     ctor: IModConstructor<M, P>,
     dependencies: IModConstructor[],
-    ...parameters: P
+    ...initArgs: P
   ) {
     const trait = ctor.Trait;
 
@@ -93,7 +93,7 @@ class IoC {
       writable: false,
     });
 
-    await mod.onLaunched(...parameters);
+    await mod.onLaunched(...initArgs);
 
     Journal.Info(`激活 [${mod.no}] ${trait}`);
   }

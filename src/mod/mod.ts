@@ -65,13 +65,13 @@ abstract class BaseMod<A extends IAbility> implements IMod {
     this._state = State.Registered;
   }
 
-  public async onLaunched(...parameters: unknown[]): Promise<void> {
+  public async onLaunched(...initArgs: unknown[]): Promise<void> {
     if (!this.isRegistered) {
       throw new ModError(ModCode.NotRegistered);
     }
 
     await this.didLaunched();
-    this._ability = this.loadAbility(...parameters);
+    this._ability = this.loadAbility(...initArgs);
     await this._ability.attach();
     this._state = State.Launched;
   }

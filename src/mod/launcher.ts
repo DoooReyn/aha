@@ -106,7 +106,7 @@ class LauncherAbility implements ILauncherAbility {
  * 启动器实现
  */
 class Launcher extends BaseMod<LauncherAbility> implements ILauncher {
-  public static readonly Parameters: Parameters<Launcher['loadAbility']>;
+  public static readonly InitArgs: Parameters<Launcher['loadAbility']>;
   public static readonly Trait: string = 'launcher';
 
   protected loadAbility(config: Partial<ILauncherConfig>): LauncherAbility {

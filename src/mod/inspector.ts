@@ -74,7 +74,7 @@ class CCInspectorAbility implements IAbility, ICCInspectorAbility {
  * 巡检器实现
  */
 class CCInspector extends BaseMod<CCInspectorAbility> implements ICCInspector {
-  public static readonly Parameters: Parameters<CCInspector['loadAbility']>;
+  public static readonly InitArgs: Parameters<CCInspector['loadAbility']>;
   public static readonly Trait: string = 'inspector';
 
   protected loadAbility(): CCInspectorAbility {

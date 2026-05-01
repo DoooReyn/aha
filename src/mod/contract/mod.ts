@@ -11,7 +11,7 @@ export interface IMod {
   /** 生命周期: 登记 */
   onRegistered(): void;
   /** 生命周期: 启动 */
-  onLaunched(...parameters: unknown[]): Promise<void>;
+  onLaunched(...initArgs: unknown[]): Promise<void>;
   /** 生命周期: 注销 */
   onUnregistered(): Promise<void>;
   /** 是否初始状态 */
@@ -34,8 +34,8 @@ export interface IModConstructor<M extends IMod = IMod, P extends unknown[] = un
   new (): M;
   /** 标识 */
   Trait: string;
-  /** 入参 */
-  readonly Parameters: P;
+  /** 模块能力入参 */
+  readonly InitArgs: P;
 }
 
 /**
