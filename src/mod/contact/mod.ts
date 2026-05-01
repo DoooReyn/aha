@@ -18,11 +18,11 @@ export interface IMod {
   get isPrimitive(): boolean;
   /** 是否登记状态 */
   get isRegistered(): boolean;
-  /** 是否工作状态 */
+  /** 是否启动状态 */
   get isLaunched(): boolean;
   /** 是否注销状态 */
   get isUnRegistered(): boolean;
-  /** 工作能力 */
+  /** 能力 */
   get ability(): IAbility;
 }
 

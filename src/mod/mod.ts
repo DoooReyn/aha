@@ -48,7 +48,7 @@ abstract class BaseMod<A extends IAbility> implements IMod {
 
   /** 当前状态 */
   private _state: State;
-  /** 工作能力 */
+  /** 能力 */
   private _ability: A;
 
   public constructor() {
@@ -110,11 +110,14 @@ abstract class BaseMod<A extends IAbility> implements IMod {
 
   /** 登记钩子 */
   protected didRegistered(): void {}
+
   /** 启动钩子 */
   protected async didLaunched(): Promise<void> {}
+
   /** 注销钩子 */
   protected async didUnRegistered(): Promise<void> {}
-  /** 装载能力  */
+
+  /** 装载能力 */
   protected abstract loadAbility(...parameters: unknown[]): A;
 }
 
