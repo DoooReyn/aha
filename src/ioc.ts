@@ -66,7 +66,7 @@ class IoC {
   }
 
   /**
-   * 激活模块
+   * 启动模块
    * @param ctor 模块构造
    * @param dependencies 依赖
    * @param parameters 模块入参
