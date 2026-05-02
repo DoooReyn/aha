@@ -1,14 +1,13 @@
 import { sys } from 'cc';
 
 import { access } from '../foundation/access';
-import { IAbility } from './contract';
 import { CCInspectorFields, ICCInspector, ICCInspectorAbility, ICCInspectorManualField } from './contract/inspector';
 import { BaseMod } from './mod';
 
 /**
  * 巡检器能力实现
  */
-class CCInspectorAbility implements IAbility, ICCInspectorAbility {
+class CCInspectorAbility implements ICCInspectorAbility {
   private _container: Map<string, number>;
 
   public constructor(public mod: ICCInspector) {

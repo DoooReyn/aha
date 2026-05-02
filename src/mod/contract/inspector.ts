@@ -84,7 +84,7 @@ export type CCInspectorFields = ICCInspectorStaticField | ICCInspectorDynamicFie
 /**
  * 巡检器能力
  */
-export interface ICCInspectorAbility {
+export interface ICCInspectorAbility extends IAbility {
   /** 功能是否可用 */
   get available(): boolean;
   /** 添加字段 */
@@ -99,5 +99,5 @@ export interface ICCInspectorAbility {
  * 巡检器
  */
 export interface ICCInspector extends IMod {
-  get ability(): IAbility & ICCInspectorAbility;
+  get ability(): ICCInspectorAbility;
 }
