@@ -6,7 +6,7 @@ import { Build, ILauncher, ILauncherAbility, ILauncherConfig, Language } from '.
 import { BaseMod } from './mod';
 
 /**
- * 启动器奥术实现
+ * 启动器能力实现
  */
 class LauncherAbility implements ILauncherAbility {
   /** 启动参数 */
