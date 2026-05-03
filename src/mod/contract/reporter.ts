@@ -151,6 +151,8 @@ export interface IReporterAbility extends IAbility {
 
 /**
  * 上报中心接口
+ *
+ * 采集数据并上报给服务器
  */
 export interface IReporter extends IMod {
   get ability(): IReporterAbility;

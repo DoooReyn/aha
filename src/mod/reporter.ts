@@ -11,6 +11,9 @@ import {
 } from './contract/reporter';
 import { BaseMod } from './mod';
 
+/**
+ * 上报中心能力实现
+ */
 class ReporterAbility implements IReporterAbility {
   /** 上报配置 */
   private _config: IReporterConfig;
@@ -305,10 +308,7 @@ class ReporterAbility implements IReporterAbility {
   }
 }
 /**
- * 记者公民实现
- *
- * 原型：日志上报系统
- * 职业：采集王国轶事并上报到服务器
+ * 上报中心实现
  */
 class Reporter extends BaseMod<ReporterAbility> implements IReporter {
   public static readonly InitArgs: Parameters<Reporter['loadAbility']>;
