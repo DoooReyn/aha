@@ -8,3 +8,4 @@ export * from './pool';
 export * from './reporter';
 export * from './sentry';
 export * from './storage';
+export * from './res-cache';

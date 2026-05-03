@@ -17,7 +17,7 @@ enum IoCCode {
 class IocError extends Error {
   public constructor(
     public readonly code: IoCCode,
-    public readonly roster: string
+    public readonly trait: string
   ) {
     super(IoCCode[code]);
   }
