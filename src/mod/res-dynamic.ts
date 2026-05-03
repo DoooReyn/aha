@@ -8,7 +8,7 @@ import { BaseMod } from './mod';
 /**
  * 动态资源加载器错误码
  */
-enum DynamicErrorCode {
+enum ResDynamicCode {
   /** 不合规的资产标识 */
   IllegalUri,
 }
@@ -16,9 +16,9 @@ enum DynamicErrorCode {
 /**
  * 动态资源加载器错误
  */
-class DynamicViolationError extends Error {
+class ResDynamicError extends Error {
   public constructor(
-    public readonly code: DynamicErrorCode,
+    public readonly code: ResDynamicCode,
     msg: string
   ) {
     super(msg);
@@ -40,7 +40,7 @@ class ResDynamicAbility implements IResDynamicAbility {
   private _parseUri(uri: string, type: Constructor<Asset>) {
     const [bundle, path] = uri.split('@');
     if (!bundle || bundle === 'remote' || !path) {
-      throw new DynamicViolationError(DynamicErrorCode.IllegalUri, `不合规的资产标识: ${uri}`);
+      throw new ResDynamicError(ResDynamicCode.IllegalUri, `不合规的资产标识: ${uri}`);
     }
 
     const typeName = js.getClassName(type);
