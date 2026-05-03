@@ -6,3 +6,4 @@ export * from './inspector';
 export * from './launcher';
 export * from './pool';
 export * from './reporter';
+export * from './sentry';
