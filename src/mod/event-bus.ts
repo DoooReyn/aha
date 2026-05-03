@@ -152,7 +152,7 @@ class EventBusAbility implements IEventBusAbility {
  */
 class EventBus extends BaseMod<EventBusAbility> implements IEventBus {
   public static readonly InitArgs: Parameters<EventBus['loadAbility']>;
-  public static readonly Trait: string = 'event-bus';
+  public static readonly Trait: string = 'eventBus';
 
   protected loadAbility(): EventBusAbility {
     return new EventBusAbility(this);

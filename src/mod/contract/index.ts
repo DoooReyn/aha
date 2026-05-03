@@ -8,3 +8,4 @@ export * from './reporter';
 export * from './sentry';
 export * from './storage';
 export * from './res-cache';
+export * from './res-dynamic';

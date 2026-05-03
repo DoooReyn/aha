@@ -224,7 +224,7 @@ class ResCacheAbility implements IResCacheAbility {
  */
 export class ResCache extends BaseMod<ResCacheAbility> implements IResCache {
   public static readonly InitArgs: Parameters<ResCache['loadAbility']>;
-  public static readonly Trait: string = 'res-cache';
+  public static readonly Trait: string = 'resCache';
   declare public dependencies: IResCache['dependencies'];
 
   /**
