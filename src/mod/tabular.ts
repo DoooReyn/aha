@@ -836,13 +836,14 @@ class TabularAbility implements ITabularAbility {
   ) {
     this._tables = new Map();
     this._config = {
-      defaultCacheSize: config.defaultCacheSize ?? 100,
-      debug: config.debug ?? false,
+      defaultCacheSize: 100,
+      debug: false,
+      ...config,
     };
   }
 
   public async attach(): Promise<void> {
-    Journal.Info('配置中心已就位，配置表管理系统已启动');
+    Journal.Info('配置中心模块已就位');
   }
 
   public detach(): void {
