@@ -1,6 +1,6 @@
 import { Asset } from 'cc';
 
-import { Constructor, SyncOperation } from '../../foundation/interfaces/general';
+import { Constructor, SyncOperation } from '../../foundation';
 import { IAbility, IMod } from './mod';
 import { IResCacheAbility } from './res-cache';
 

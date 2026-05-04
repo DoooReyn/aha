@@ -1,7 +1,6 @@
 import { sys } from 'cc';
 
-import { access } from '../foundation/access';
-import { now } from '../foundation/time';
+import { access, time } from '../foundation';
 import { Journal } from '../journal';
 import { ReportType } from './contract';
 import { ISentry, ISentryAbility, ISentryError, ISentryStats, SentryErrorType } from './contract/sentry';
@@ -101,7 +100,7 @@ class SentryAbility implements ISentryAbility {
       type: SentryErrorType.JAVASCRIPT,
       code: 'JAVASCRIPT_ERROR',
       message: event.message || 'Unknown error',
-      timestamp: now(),
+      timestamp: time.now(),
       stack: event.error?.stack,
       filename: event.filename,
       lineno: event.lineno,
@@ -137,7 +136,7 @@ class SentryAbility implements ISentryAbility {
       type: SentryErrorType.PROMISE,
       code: 'PROMISE_REJECTION',
       message,
-      timestamp: now(),
+      timestamp: time.now(),
       stack,
     };
 
@@ -157,7 +156,7 @@ class SentryAbility implements ISentryAbility {
       message: msg,
       filename: name,
       lineno: line,
-      timestamp: now(),
+      timestamp: time.now(),
       stack,
     };
 

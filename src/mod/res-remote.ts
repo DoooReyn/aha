@@ -20,9 +20,7 @@ import {
   VideoClip,
 } from 'cc';
 
-import { each, handle, merge } from '../foundation/dict';
-import { Dict, SyncOperation } from '../foundation/interfaces/general';
-import { time } from '../foundation/time';
+import { dict, time, Dict, SyncOperation } from '../foundation';
 import { Journal, JournalCategory } from '../journal';
 import { CargoState, IResRemote, IResRemoteAbility, IResRemoteConfig } from './contract';
 import { BaseMod } from './mod';
@@ -115,9 +113,9 @@ class ResRemoteAbility implements IResRemoteAbility {
       throw new ResRemoteError(ResRemoteCode.ServerAbsence, '远程资源服务器地址未配置');
     }
 
-    const params = handle<typeof this._params, string>(this._params, (k, v) => `${k}=${v}`);
+    const params = dict.handle<typeof this._params, string>(this._params, (k, v) => `${k}=${v}`);
     if (this._timestamp) {
-      params.push(`timestamp=${time()}`);
+      params.push(`timestamp=${time.time()}`);
     }
     if (params.length) {
       return `${path.join(remoteUrl, url)}?${params.join('&')}`;
@@ -303,7 +301,7 @@ class ResRemoteAbility implements IResRemoteAbility {
       const frames: Record<string, SpriteFrame> = {};
       asset.spriteFrames = frames;
 
-      each(jsonAsset.json.frames, (k, info) => {
+      dict.each(jsonAsset.json.frames, (k, info) => {
         const frame = new SpriteFrame();
         const frameUuid = `${uri}#${k as string}`;
         frame.texture = textureAsset;
@@ -414,7 +412,7 @@ class ResRemoteAbility implements IResRemoteAbility {
   }
 
   public addRequestParams(args: Record<string, string>) {
-    merge(this._params, args);
+    dict.merge(this._params, args);
   }
 
   public async load<A extends Asset>(

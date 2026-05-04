@@ -1,4 +1,4 @@
-import { LRUCache } from '../foundation/collections/lru-cache';
+import { LRUCache } from '../foundation';
 import { IAuditor, IAuditorAbility, IAuditorConfig, IAuditorMatchResult, IACMatchResult, IACNode } from './contract';
 import { BaseMod } from './mod';
 

@@ -1,4 +1,4 @@
-import { mightSync } from '../foundation/might';
+import { mightSync } from '../foundation';
 import { Journal } from '../journal';
 import { IEventBus, IEventBusAbility, IListener } from './contract/event-bus';
 import { BaseMod } from './mod';
