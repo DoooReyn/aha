@@ -72,7 +72,7 @@ const SUPPORTED_ASSET_TYPES: Dict = {
 } as const;
 
 /**
- * 远程资源加载器奥术实现
+ * 远程资源加载器能力实现
  */
 class ResRemoteAbility implements IResRemoteAbility {
   /** 请求参数 */
