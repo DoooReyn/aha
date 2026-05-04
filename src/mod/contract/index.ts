@@ -10,3 +10,4 @@ export * from './storage';
 export * from './res-cache';
 export * from './res-dynamic';
 export * from './res-remote';
+export * from './tabular';
