@@ -80,7 +80,7 @@ function isValid(value: unknown): value is undefined | null {
  * @param value - 要检查的值
  * @returns 如果值为空值则返回 true
  */
-function isEmpty(value: unknown): boolean {
+function isFalsy(value: unknown): boolean {
   return (
     isUndefined(value) ||
     isNull(value) ||
@@ -346,7 +346,7 @@ export {
   isUndefined,
   isNull,
   isValid,
-  isEmpty,
+  isFalsy,
   isTrue,
   isFalse,
   isStrictlyFalse,

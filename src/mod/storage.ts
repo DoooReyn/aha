@@ -1,10 +1,6 @@
 import { sys } from 'cc';
 
-import { ChainedCipher } from '../foundation/cipher-chained';
-import { ICipher } from '../foundation/interfaces/cipher';
-import { Dict } from '../foundation/interfaces/general';
-import { mightSync } from '../foundation/might';
-import { debounce } from '../foundation/uncategorized';
+import { debounce, mightSync, ChainedCipher, Dict, ICipher } from '../foundation';
 import { Journal } from '../journal';
 import { IStorage, IStorageAbility, IStorageConfig, IStorageSchema } from './contract/storage';
 import { BaseMod } from './mod';

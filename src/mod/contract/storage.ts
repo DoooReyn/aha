@@ -1,4 +1,4 @@
-import { ICipher } from '../../foundation/interfaces/cipher';
+import { ICipher } from '../../foundation';
 import { ILauncherAbility } from './launcher';
 import { IAbility, IMod } from './mod';
 

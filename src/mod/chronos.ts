@@ -1,6 +1,6 @@
 import { director, game, js, Director } from 'cc';
 
-import { mightSync } from '../foundation/might';
+import { mightSync } from '../foundation';
 import { IChronos, IChronosAbility, IClock, IClockStats } from './contract/chronos';
 import { BaseMod } from './mod';
 

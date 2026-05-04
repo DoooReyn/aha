@@ -1,7 +1,6 @@
 import { director, game, sys, Camera, Canvas, Director, Game, Layers, Node, Scene } from 'cc';
 
-import { access } from '../foundation/access';
-import { now } from '../foundation/time';
+import { access, time } from '../foundation';
 import { Journal } from '../journal';
 import { Build, ILauncher, ILauncherAbility, ILauncherConfig, Language } from './contract/launcher';
 import { BaseMod } from './mod';
@@ -153,14 +152,14 @@ class LauncherAbility implements ILauncherAbility {
   /** 应用退到后台 */
   private _internalPause() {
     this._runningInternal = false;
-    this._timingPause = now();
+    this._timingPause = time.now();
     this.mod.dependencies.eventBus.notify(Launcher.EventType.EnterBackground);
   }
 
   /** 应用回到前台 */
   private _internalResume() {
     this._runningInternal = true;
-    this._timingResume = now();
+    this._timingResume = time.now();
     this.mod.dependencies.eventBus.notify(Launcher.EventType.EnterForeground);
   }
 

@@ -1,6 +1,6 @@
 import { assetManager, js, Asset, AssetManager, Constructor } from 'cc';
 
-import { SyncOperation } from '../foundation/interfaces/general';
+import { SyncOperation } from '../foundation';
 import { Journal } from '../journal';
 import { CargoState, IResDynamic, IResDynamicAbility } from './contract';
 import { BaseMod } from './mod';

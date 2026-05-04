@@ -1,6 +1,6 @@
 import { js, AudioClip, AudioSource, Node } from 'cc';
 
-import { now } from '../foundation/time';
+import { time } from '../foundation';
 import { Journal } from '../journal';
 import { CantorCategory, CargoTTL, ICantor, ICantorAbility, ICantorConfig, ICantorPlayer, IProject } from './contract';
 import { BaseMod } from './mod';
@@ -161,12 +161,12 @@ class CrispPlayer extends CantorPlayer {
       return Promise.resolve(null);
     }
 
-    const time = now();
-    if (this._arcane.isTooShort(time, this._lastAt)) {
+    const now = time.now();
+    if (this._arcane.isTooShort(now, this._lastAt)) {
       Journal.Warn(`Crisp 播放过快，拒绝播放 ${uri}`);
       return Promise.resolve(null);
     }
-    this._lastAt = time;
+    this._lastAt = now;
 
     if (this._arcane.isReachLimit(this._category)) {
       Journal.Warn(`Crisp 播放通道受限，拒绝播放 ${uri}`);

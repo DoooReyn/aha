@@ -1,6 +1,6 @@
 import { sys } from 'cc';
 
-import { now } from '../foundation/time';
+import { time } from '../foundation';
 import {
   IReporter,
   IReporterAbility,
@@ -89,7 +89,7 @@ class ReporterAbility implements IReporterAbility {
       type,
       code,
       message,
-      timestamp: now(),
+      timestamp: time.now(),
       data,
       retryCount: 0,
       os: sys.os,

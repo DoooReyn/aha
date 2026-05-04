@@ -1,7 +1,6 @@
 import { assetManager, js, path, Asset } from 'cc';
 
-import { Constructor, Dict } from '../foundation/interfaces/general';
-import { now } from '../foundation/time';
+import { time, Constructor, Dict } from '../foundation';
 import { Journal } from '../journal';
 import { CargoState, ICargo, IResCache, IResCacheAbility, IResCacheConfig } from './contract';
 import { BaseMod } from './mod';
@@ -118,9 +117,9 @@ class ResCacheAbility implements IResCacheAbility {
   }
 
   public cleanup(): void {
-    const time = now();
+    const now = time.now();
     for (const [uri, cargo] of this._cargos) {
-      if (cargo.asset && cargo.ref === 0 && cargo.lastUsed > 0 && cargo.lastUsed + cargo.ttl * 1000 < time) {
+      if (cargo.asset && cargo.ref === 0 && cargo.lastUsed > 0 && cargo.lastUsed + cargo.ttl * 1000 < now) {
         this.discard(uri);
       }
     }
@@ -185,7 +184,7 @@ class ResCacheAbility implements IResCacheAbility {
 
     const cargo = this._cargos.get(uri);
     cargo.ref++;
-    cargo.lastUsed = now();
+    cargo.lastUsed = time.now();
 
     const depends = this._depends.get(uri);
     if (depends) {
@@ -201,7 +200,7 @@ class ResCacheAbility implements IResCacheAbility {
     const uri = typeof uriOrAsset === 'string' ? uriOrAsset : (uriOrAsset as Dict)['uri'];
     if (this.has(uri)) {
       const cargo = this._cargos.get(uri);
-      cargo.lastUsed = now();
+      cargo.lastUsed = time.now();
       cargo.ref = Math.max(0, cargo.ref - 1);
 
       const depends = this._depends.get(cargo.uri);

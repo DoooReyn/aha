@@ -10,9 +10,7 @@
  */
 import { BufferAsset } from 'cc';
 
-import { LZU8Cipher } from '../foundation/cipher-lzstring';
-import { LRUCache } from '../foundation/collections/lru-cache';
-import { deepCopy } from '../foundation/dict';
+import { dict, LRUCache, LZU8Cipher } from '../foundation';
 import { Journal } from '../journal';
 import {
   AggregateOp,
@@ -637,7 +635,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
       return null;
     }
     // 深拷贝返回
-    return deepCopy(record) as T;
+    return dict.deepCopy(record) as T;
   }
 
   /**
@@ -657,7 +655,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
       }
     }
 
-    const copied = results.map((r) => deepCopy(r)) as T[];
+    const copied = results.map((r) => dict.deepCopy(r)) as T[];
     this._setCached(cacheKey, copied);
     return copied;
   }
@@ -673,7 +671,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
         results.push(record);
       }
     }
-    return results.map((r) => deepCopy(r)) as T[];
+    return results.map((r) => dict.deepCopy(r)) as T[];
   }
 
   /**
@@ -686,7 +684,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
       return cached;
     }
 
-    const results = Array.from(this._data.values()).map((r) => deepCopy(r)) as T[];
+    const results = Array.from(this._data.values()).map((r) => dict.deepCopy(r)) as T[];
     this._setCached(cacheKey, results);
     return results;
   }
@@ -703,7 +701,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
       if (!result[key]) {
         result[key] = [];
       }
-      result[key].push(deepCopy(record) as T);
+      result[key].push(dict.deepCopy(record) as T);
     }
 
     return result;
@@ -752,7 +750,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
     }
 
     const sorted = Array.from(this._data.values())
-      .map((r) => deepCopy(r) as T)
+      .map((r) => dict.deepCopy(r) as T)
       .sort((a, b) => {
         const aVal = a[field];
         const bVal = b[field];
@@ -797,7 +795,7 @@ class ConfigTableQuery<T extends Record<string, unknown>> {
       return null;
     }
     const cached = this._cache.get(key);
-    return cached ? (deepCopy(cached) as T[]) : null;
+    return cached ? (dict.deepCopy(cached) as T[]) : null;
   }
 
   /**

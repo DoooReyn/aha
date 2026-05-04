@@ -1,6 +1,6 @@
 import { Asset } from 'cc';
 
-import { Constructor } from '../../foundation/interfaces/general';
+import { Constructor } from '../../foundation';
 import { IChronosAbility } from './chronos';
 import { IAbility, IMod } from './mod';
 

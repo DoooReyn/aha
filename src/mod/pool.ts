@@ -1,6 +1,6 @@
 import { director, game, Director } from 'cc';
 
-import { now } from '../foundation/time';
+import { time } from '../foundation';
 import { Journal } from '../journal';
 import { IPool, IPoolAbility, IProject, IProjectConfig } from './contract/pool';
 import { BaseMod } from './mod';
@@ -93,7 +93,7 @@ class ProjectLine<P extends IProject = IProject> {
     }
 
     const project = this._idleProjects.pop();
-    project.usedAt = now();
+    project.usedAt = time.now();
     project.recycledAt = project.disposedAt = 0;
     project.onProduce(...parameters);
     this._busyProjects.push(project);
@@ -118,7 +118,7 @@ class ProjectLine<P extends IProject = IProject> {
   public recycle(project: P) {
     if (this.isRecyclable(project)) {
       if (this._idleProjects.length < this.config.maximum) {
-        project.recycledAt = now();
+        project.recycledAt = time.now();
         project.onRecycle();
         this._removeFromBusy(project);
         this._idleProjects.push(project);
@@ -137,7 +137,7 @@ class ProjectLine<P extends IProject = IProject> {
    */
   private _dispose(project: P) {
     this._removeFromBusy(project);
-    project.disposedAt = now();
+    project.disposedAt = time.now();
     project.onDispose();
   }
 
@@ -164,12 +164,12 @@ class ProjectLine<P extends IProject = IProject> {
 
       if (this._idleProjects.length <= this.config.warmup) return;
 
-      const time = now();
+      const now = time.now();
       let count = this.config.warmup;
       for (let i = this._idleProjects.length - 1; i >= 0; i--) {
         const project = this._idleProjects[i];
-        if (project.usedAt > 0 && time - project.usedAt > this.config.ttl) {
-          project.disposedAt = now();
+        if (project.usedAt > 0 && now - project.usedAt > this.config.ttl) {
+          project.disposedAt = now;
           project.onDispose();
           this._idleProjects.splice(i, 1);
           if (--count == 0) break;
@@ -183,11 +183,11 @@ class ProjectLine<P extends IProject = IProject> {
    * @param count 数量
    */
   private _manufacture(count: number) {
-    const time = now();
+    const now = time.now();
     for (let i = 0; i < count; i++) {
       const project = this.config.produce();
       project.project = this.config.project;
-      project.createdAt = time;
+      project.createdAt = now;
       project.usedAt = project.recycledAt = project.disposedAt = 0;
       this._idleProjects.push(project);
     }
@@ -281,7 +281,7 @@ class PoolAbility implements IPoolAbility {
     } else {
       // 保底销毁
       if (project.disposedAt === 0) {
-        project.disposedAt = now();
+        project.disposedAt = time.now();
         project.onDispose();
       }
     }

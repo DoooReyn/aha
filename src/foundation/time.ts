@@ -417,11 +417,6 @@ function waitSync<R = unknown>(handle: () => R, ms: number) {
 }
 
 /**
- * 空转方法
- */
-function idle() {}
-
-/**
  * 计时点
  * @param tag 标记
  */
@@ -463,6 +458,5 @@ export {
   fmt,
   waitAsync,
   waitSync,
-  idle,
   timing,
 };

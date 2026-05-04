@@ -3,7 +3,7 @@
  *
  * 采用数组作为底层存储，所有操作均为 O(1)。
  */
-export class Stack<T> {
+class Stack<T> {
   /** 内部数组 */
   private _items: T[] = [];
 
@@ -50,3 +50,5 @@ export class Stack<T> {
     }
   }
 }
+
+export { Stack };

@@ -1,6 +1,6 @@
 import { sys } from 'cc';
 
-import { access } from '../foundation/access';
+import { access } from '../foundation';
 import { CCInspectorFields, ICCInspector, ICCInspectorAbility, ICCInspectorManualField } from './contract/inspector';
 import { BaseMod } from './mod';
 
