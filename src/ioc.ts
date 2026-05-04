@@ -89,7 +89,7 @@ class IoC {
     const mod = this._mod.get(trait);
     Object.defineProperty(mod, 'dependencies', {
       value: dependencies.reduce((all: IMod['dependencies'], item) => {
-        all[item.Trait] = this.resolve(item);
+        all[item.Trait] = this.resolveStrictly(item);
         return all;
       }, {}),
       enumerable: true,
@@ -120,16 +120,28 @@ class IoC {
   }
 
   /**
-   * 解析模块
+   * 解析模块（严格模式）
    * @param ctor 模块构造或标识
    * @returns 模块能力
    */
-  public resolve<M extends IModConstructor>(ctor: M | string): InstanceType<M>['ability'] {
+  public resolveStrictly<M extends IModConstructor>(ctor: M | string): InstanceType<M>['ability'] {
     const trait = typeof ctor === 'string' ? ctor : ctor.Trait;
     if (!this._mod.has(trait)) {
       throw new IocError(IoCCode.NotRegistered, trait);
     }
     return this._mod.get(trait).ability as InstanceType<M>['ability'];
+  }
+
+  /**
+   * 解析模块（宽松模式）
+   * @param ctor 模块标识
+   * @returns 模块能力
+   */
+  public resolve<M extends IMod>(trait: string) {
+    if (!this._mod.has(trait)) {
+      throw new IocError(IoCCode.NotRegistered, trait);
+    }
+    return (this._mod.get(trait) as M).ability as M['ability'];
   }
 }
 
