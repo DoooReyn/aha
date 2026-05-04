@@ -11,3 +11,4 @@ export * from './res-cache';
 export * from './res-dynamic';
 export * from './res-remote';
 export * from './tabular';
+export * from './auditor';
