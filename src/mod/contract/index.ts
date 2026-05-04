@@ -13,3 +13,4 @@ export * from './res-remote';
 export * from './tabular';
 export * from './auditor';
 export * from './linguist';
+export * from './cantor';

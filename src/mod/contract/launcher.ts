@@ -1,6 +1,9 @@
-import { __private } from 'cc';
+import { __private, Camera, Canvas, Node, Scene } from 'cc';
 
+import { IEventBusAbility } from './event-bus';
 import { IAbility, IMod } from './mod';
+import { IPoolAbility } from './pool';
+import { IResCacheAbility } from './res-cache';
 
 /** 语言代码 */
 export type Language = __private._pal_system_info_enum_type_language__Language;
@@ -67,6 +70,26 @@ export interface ILauncherAbility extends IAbility {
   isLanguageSupported(language: Language): boolean;
   /** 获取当前支持的语言列表 */
   get supportedLanguages(): Language[];
+  /** 场景 */
+  scene: Scene;
+  /** 根节点 */
+  root: Node;
+  /** 挂载节点 */
+  mnt: Node;
+  /** 画布 */
+  canvas: Canvas;
+  /** UI相机 */
+  cameraUi: Camera;
+  /** 舞台 */
+  stage: Node;
+  /** 暂停逻辑 */
+  pause(): void;
+  /** 恢复逻辑 */
+  resume(): void;
+  /** 从后台回到前台经历的时间（ms） */
+  get elapsed(): number;
+  /** 运行状态 */
+  get running(): boolean;
 }
 
 /**
@@ -76,4 +99,5 @@ export interface ILauncherAbility extends IAbility {
  */
 export interface ILauncher extends IMod {
   get ability(): ILauncherAbility;
+  dependencies: { eventBus: IEventBusAbility; pool: IPoolAbility; resCache: IResCacheAbility };
 }
