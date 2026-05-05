@@ -112,7 +112,6 @@ export interface IGuiNavigator {
   push(ui: string, data?: unknown): Promise<void>;
   /**
    * 出栈
-   * @param data 数据（可选）
    */
   pop(data?: unknown): Promise<void>;
   /**
@@ -133,8 +132,8 @@ export interface IGuiNavigator {
  * 优先级队列式视图容器
  *
  * - 同时只能显示一个
- * - 所有视图在内部排队（自动去重），依靠优先级决定谁优先展示
  * - 上一个视图关闭后自动展示下一个视图
+ * - 所有视图在内部排队（自动去重），依靠优先级决定下一个轮到谁展示
  */
 export interface IGuiPriority {
   /**

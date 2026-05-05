@@ -50,8 +50,7 @@ class GuiNavigator implements IGuiNavigator {
       const index = this._stack.findIndex((v) => v.ui === ui);
       if (index > -1) {
         for (let i = this._stack.length - 1; i > index; i--) {
-          const view = this._stack[i];
-          registry.close(view.ui, view);
+          await this._close(this._stack[i], true);
         }
         this._stack.length = index + 1;
         const next = this._stack[index];
@@ -81,7 +80,7 @@ class GuiNavigator implements IGuiNavigator {
       if (curr) {
         // 当前视图失焦，然后关闭
         curr.onBlur();
-        registry.close(curr.ui, curr);
+        this._close(curr, false);
       }
 
       // 添加入栈视图
@@ -101,14 +100,13 @@ class GuiNavigator implements IGuiNavigator {
     this._loading = false;
   }
 
-  public async pop(data?: unknown): Promise<void> {
+  public async pop(): Promise<void> {
     const depth = this.depth;
     if (depth > 0) {
-      const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
       const vd1 = this._stack[depth - 1];
       const vd2 = this._stack[depth - 2];
       this._stack.pop();
-      registry.close(vd1.ui, vd1);
+      this._close(vd1, false);
       if (vd2) {
         vd2.onFocus();
       }
@@ -116,8 +114,7 @@ class GuiNavigator implements IGuiNavigator {
   }
 
   public purge(): void {
-    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
-    list.each(this._stack, (view) => registry.close(view.ui, view), true);
+    list.each(this._stack, (view) => this._close(view, true), true);
     this._stack.length = 0;
   }
 
@@ -127,6 +124,15 @@ class GuiNavigator implements IGuiNavigator {
 
   public get depth(): number {
     return this._stack.length;
+  }
+
+  private async _close(view: IGuiStackView, force: boolean) {
+    if (!force) {
+      // @todo await 退出动画
+    }
+    view.onExit();
+    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
+    registry.close(view.ui, view);
   }
 }
 
