@@ -2,7 +2,7 @@ import { instantiate, js, Node, Prefab } from 'cc';
 
 import { time, Dict } from '../foundation';
 import { Journal } from '../journal';
-import { IGuiManifest, IGuiRegistry, IGuiRegistryAbility, IGuiViewInstance } from './contract';
+import { IGuiManifest, IGuiRegistry, IGuiRegistryAbility, IGuiView } from './contract';
 import { BaseMod } from './mod';
 
 /**
@@ -10,7 +10,7 @@ import { BaseMod } from './mod';
  */
 class GuiRegistryAbility implements IGuiRegistryAbility {
   /** 视图缓存 */
-  private _caches: Map<string, IGuiViewInstance[]>;
+  private _caches: Map<string, IGuiView[]>;
   /** 视图异步加载对象 */
   private _promises: Map<string, [promise: Promise<Node>, aborted: boolean]>;
   /** 编号生成器 */
@@ -116,7 +116,7 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
     return promise;
   }
 
-  public close(ui: string, view: IGuiViewInstance): void {
+  public close(ui: string, view: IGuiView): void {
     if (ui !== view.ui) {
       Journal.Warn(`视图不匹配: ${ui} != ${view.ui}`);
       return;

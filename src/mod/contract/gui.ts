@@ -70,13 +70,13 @@ export interface IGuiConfig {
   /** 是否模态弹窗（弹窗专用） */
   isModal?: boolean;
   /** 视图组件 */
-  view: Constructor<IGuiViewInstance>;
+  view: Constructor<IGuiView>;
 }
 
 /**
  * 抢占式视图容器
  *
- * - 同时只能展示一个视图，要展示下一个视图只能先关闭上一个视图
+ * - 同时只能展示一个视图
  */
 export interface IGuiExclusive {
   /**
@@ -101,7 +101,7 @@ export interface IGuiExclusive {
  * - 永远只显示栈顶视图
  * - 一次只能执行一个操作：入栈或出栈
  * - 支持栈深度限制，超过栈深度自动清栈
- * - 栈视图需要支持 focus/blur
+ * - 栈视图需要支持对焦和失焦
  */
 export interface IGuiNavigator {
   /**
@@ -112,8 +112,9 @@ export interface IGuiNavigator {
   push(ui: string, data?: unknown): Promise<void>;
   /**
    * 出栈
+   * @param data 数据（可选）
    */
-  pop(): Promise<void>;
+  pop(data?: unknown): Promise<void>;
   /**
    * 清栈
    */
@@ -276,7 +277,7 @@ export interface IGuiSketch {
 /**
  * UI 视图接口
  */
-export interface IGuiView<S extends IGuiSketch = {}> {
+export interface IGuiView<S extends IGuiSketch = {}> extends Component {
   /** 视图标识（自动挂载） */
   ui: string;
   /** 视图编号（自动挂载） */
@@ -292,11 +293,6 @@ export interface IGuiView<S extends IGuiSketch = {}> {
   /** 视图骨架 */
   sketch(): S;
 }
-
-/**
- * UI 视图实例
- */
-export type IGuiViewInstance<S extends IGuiSketch = {}> = IGuiView<S> & Component;
 
 /**
  * UI 栈视图接口

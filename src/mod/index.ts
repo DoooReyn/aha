@@ -1,3 +1,4 @@
+export * from './trait';
 export * from './contract';
 export * from './mod';
 export * from './chronos';
