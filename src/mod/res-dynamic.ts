@@ -4,6 +4,7 @@ import { SyncOperation } from '../foundation';
 import { Journal } from '../journal';
 import { CargoState, IResDynamic, IResDynamicAbility } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 动态资源加载器错误码
@@ -191,7 +192,7 @@ class ResDynamicAbility implements IResDynamicAbility {
  */
 export class ResDynamic extends BaseMod<ResDynamicAbility> implements IResDynamic {
   public static readonly InitArgs: Parameters<ResDynamic['loadAbility']>;
-  public static readonly Trait: string = 'resDynamic';
+  public static readonly Trait: string = TRAIT.RES_DYNAMIC;
   declare public dependencies: IResDynamic['dependencies'];
 
   protected loadAbility(): ResDynamicAbility {

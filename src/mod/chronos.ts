@@ -3,6 +3,7 @@ import { director, game, js, Director } from 'cc';
 import { mightSync } from '../foundation';
 import { IChronos, IChronosAbility, IClock, IClockStats } from './contract/chronos';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /** 闹钟监听器 */
 type IListener<P extends unknown[] = []> = [process: (...args: P) => void, ambient?: unknown, once?: boolean];
@@ -440,7 +441,7 @@ class ChronosAbility implements IChronosAbility {
  */
 class Chronos extends BaseMod<ChronosAbility> implements IChronos {
   public static readonly InitArgs: Parameters<Chronos['loadAbility']>;
-  public static readonly Trait: string = 'chronos';
+  public static readonly Trait: string = TRAIT.CHRONOS;
   protected loadAbility(): ChronosAbility {
     return new ChronosAbility(this);
   }

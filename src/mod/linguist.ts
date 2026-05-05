@@ -1,6 +1,7 @@
 import { Journal } from '../journal';
 import { ILinguist, ILinguistAbility, ILinguistSchema, Language, VId, VText } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 国际化错误码
@@ -116,7 +117,7 @@ class LinguistAbility implements ILinguistAbility {
  */
 class Linguist extends BaseMod<LinguistAbility> implements ILinguist {
   public static readonly InitArgs: Parameters<Linguist['loadAbility']>;
-  public static readonly Trait: string = 'linguist';
+  public static readonly Trait: string = TRAIT.LINGUIST;
   public static readonly Schema: string = 'language';
   public static readonly EventType: string = 'language:changed';
   public dependencies: ILinguist['dependencies'];

@@ -4,6 +4,7 @@ import { time, Constructor, Dict } from '../foundation';
 import { Journal } from '../journal';
 import { CargoState, ICargo, IResCache, IResCacheAbility, IResCacheConfig } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 资源缓存中心错误码
@@ -223,7 +224,7 @@ class ResCacheAbility implements IResCacheAbility {
  */
 export class ResCache extends BaseMod<ResCacheAbility> implements IResCache {
   public static readonly InitArgs: Parameters<ResCache['loadAbility']>;
-  public static readonly Trait: string = 'resCache';
+  public static readonly Trait: string = TRAIT.RES_CACHE;
   declare public dependencies: IResCache['dependencies'];
 
   /**

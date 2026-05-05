@@ -2,6 +2,7 @@ import { mightSync } from '../foundation';
 import { Journal } from '../journal';
 import { IEventBus, IEventBusAbility, IListener } from './contract/event-bus';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 事件总线能力实现
@@ -152,7 +153,7 @@ class EventBusAbility implements IEventBusAbility {
  */
 class EventBus extends BaseMod<EventBusAbility> implements IEventBus {
   public static readonly InitArgs: Parameters<EventBus['loadAbility']>;
-  public static readonly Trait: string = 'eventBus';
+  public static readonly Trait: string = TRAIT.EVENT_BUS;
 
   protected loadAbility(): EventBusAbility {
     return new EventBusAbility(this);

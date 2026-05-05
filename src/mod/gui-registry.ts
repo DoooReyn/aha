@@ -4,6 +4,7 @@ import { time, Dict } from '../foundation';
 import { Journal } from '../journal';
 import { IGuiManifest, IGuiRegistry, IGuiRegistryAbility, IGuiView } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 用户界面登记簿能力实现
@@ -192,7 +193,7 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
  */
 class GuiRegistry extends BaseMod<GuiRegistryAbility> implements IGuiRegistry {
   public static readonly InitArgs: Parameters<GuiRegistry['loadAbility']>;
-  public static readonly Trait: string = 'guiRegistry';
+  public static readonly Trait: string = TRAIT.GUI_REGISTRY;
   declare public dependencies: IGuiRegistry['dependencies'];
 
   protected loadAbility(manifest: IGuiManifest): GuiRegistryAbility {

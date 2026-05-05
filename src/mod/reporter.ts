@@ -10,6 +10,7 @@ import {
   ReportType,
 } from './contract/reporter';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 上报中心能力实现
@@ -312,7 +313,7 @@ class ReporterAbility implements IReporterAbility {
  */
 class Reporter extends BaseMod<ReporterAbility> implements IReporter {
   public static readonly InitArgs: Parameters<Reporter['loadAbility']>;
-  public static readonly Trait: string = 'reporter';
+  public static readonly Trait: string = TRAIT.REPORTER;
   declare public dependencies: IReporter['dependencies'];
 
   protected loadAbility(config: IReporterConfig): ReporterAbility {

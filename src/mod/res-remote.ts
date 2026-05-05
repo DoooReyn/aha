@@ -24,6 +24,7 @@ import { dict, time, Dict, SyncOperation } from '../foundation';
 import { Journal, JournalCategory } from '../journal';
 import { CargoState, IResRemote, IResRemoteAbility, IResRemoteConfig } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 远程资源加载器错误码
@@ -530,7 +531,7 @@ class ResRemoteAbility implements IResRemoteAbility {
  */
 export class ResRemote extends BaseMod<ResRemoteAbility> implements IResRemote {
   public static readonly InitArgs: Parameters<ResRemote['loadAbility']>;
-  public static readonly Trait: string = 'resRemote';
+  public static readonly Trait: string = TRAIT.RES_REMOTE;
   declare public dependencies: IResRemote['dependencies'];
 
   /**

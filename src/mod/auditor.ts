@@ -1,6 +1,7 @@
 import { LRUCache } from '../foundation';
 import { IAuditor, IAuditorAbility, IAuditorConfig, IAuditorMatchResult, IACMatchResult, IACNode } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * AC 自动机
@@ -465,7 +466,7 @@ class AuditorAbility implements IAuditorAbility {
  */
 class Auditor extends BaseMod<AuditorAbility> implements IAuditor {
   public static readonly InitArgs: Parameters<Auditor['loadAbility']>;
-  public static readonly Trait: string = 'auditor';
+  public static readonly Trait: string = TRAIT.AUDITOR;
   declare public dependencies: IAuditor['dependencies'];
 
   protected loadAbility(config: IAuditorConfig = {}): AuditorAbility {

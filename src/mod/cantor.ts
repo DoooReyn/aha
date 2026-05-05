@@ -4,6 +4,7 @@ import { time } from '../foundation';
 import { Journal } from '../journal';
 import { CantorCategory, CargoTTL, ICantor, ICantorAbility, ICantorConfig, ICantorPlayer, IProject } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 音律节点
@@ -480,7 +481,7 @@ class CantorAbility implements ICantorAbility {
  */
 export class Cantor extends BaseMod<CantorAbility> implements ICantor {
   public static readonly InitArgs: Parameters<Cantor['loadAbility']>;
-  public static readonly Trait: string = 'cantor';
+  public static readonly Trait: string = TRAIT.CANTOR;
   declare public dependencies: ICantor['dependencies'];
 
   /**
