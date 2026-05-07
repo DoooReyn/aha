@@ -3,7 +3,7 @@ import { Node } from 'cc';
 import { Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiPriority, IGuiRegistry, IGuiView } from '../contract';
+import { IGuiPriority, IGuiRegistry, IGuiView, ITweener } from '../contract';
 import { TRAIT } from '../trait';
 
 /** 优先级队列条目 */
@@ -125,7 +125,10 @@ class GuiPriority implements IGuiPriority {
       view.uiid = container['uiid'];
       view.config = config;
       view.onInit(data);
-      // await (config.enterTweener, view)
+      if (config.enterTweener) {
+        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+        await tweener.execute(config.enterTweener, view.node);
+      }
       view.onEnter();
     } else {
       this._playNext();
@@ -138,13 +141,16 @@ class GuiPriority implements IGuiPriority {
       return;
     }
 
-    const current = this._current;
+    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
+    const view = this._current;
     this._current = null;
-    if (!force) {
-      // await (current.config.exitTweener, current)
+    if (!force && view.config.exitTweener) {
+      const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+      await tweener.execute(view.config.exitTweener, view.node);
     }
-    current.onExit();
-    ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY).close(current.ui, current);
+    view.onExit();
+    registry.close(view.ui, view);
+
     await this._playNext();
   }
 

@@ -3,7 +3,7 @@ import { js, Node } from 'cc';
 import { list, Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiOverlap, IGuiRegistry, IGuiView } from '../contract';
+import { IGuiOverlap, IGuiRegistry, IGuiView, ITweener } from '../contract';
 import { TRAIT } from '../trait';
 
 /**
@@ -44,7 +44,10 @@ class GuiOverlap implements IGuiOverlap {
       if (maxDepth > 0 && depth >= maxDepth) {
         const old = this._overlap.shift();
         Journal.Warn(`触发最大深度限制，${old.ui} 将被关闭`);
-        // @todo await playExitTweener(old, config.exitTweener);
+        if (old.config.exitTweener) {
+          const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+          await tweener.execute(old.config.exitTweener, old.node);
+        }
         old.onExit();
         registry.close(old.ui, old);
       }
@@ -57,7 +60,10 @@ class GuiOverlap implements IGuiOverlap {
       next.uiid = container['uiid'];
       next.config = config;
       next.onInit(data);
-      // @todo await playEnterTweener(next, config.enterTweener);
+      if (config.enterTweener) {
+        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+        await tweener.execute(config.enterTweener, next.node);
+      }
       next.onEnter();
       this._overlap.push(next);
     }
