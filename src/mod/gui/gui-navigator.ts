@@ -3,7 +3,7 @@ import { Node } from 'cc';
 import { list, Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiNavigator, IGuiRegistry, IGuiStackView } from '../contract';
+import { IGuiNavigator, IGuiRegistry, IGuiStackView, ITweener } from '../contract';
 import { TRAIT } from '../trait';
 
 /**
@@ -91,7 +91,10 @@ class GuiNavigator implements IGuiNavigator {
       next.uiid = container['uiid'];
       next.config = config;
       next.onInit(data);
-      // await (config.enterTweener, current)
+      if (config.enterTweener) {
+        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+        await tweener.execute(config.enterTweener, next.node);
+      }
       next.onEnter();
       this._stack.push(next);
     }
@@ -127,11 +130,12 @@ class GuiNavigator implements IGuiNavigator {
   }
 
   private async _close(view: IGuiStackView, force: boolean) {
-    if (!force) {
-      // @todo await 退出动画
+    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
+    if (!force && view.config.exitTweener) {
+      const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+      await tweener.execute(view.config.exitTweener, view.node);
     }
     view.onExit();
-    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
     registry.close(view.ui, view);
   }
 }

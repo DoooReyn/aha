@@ -3,7 +3,7 @@ import { Node } from 'cc';
 import { Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiExclusive, IGuiRegistry, IGuiView } from '../contract';
+import { IGuiExclusive, IGuiRegistry, IGuiView, ITweener } from '../contract';
 import { TRAIT } from '../trait';
 
 /**
@@ -45,7 +45,10 @@ class UiExclusive implements IGuiExclusive {
       current.uiid = container['uiid'];
       current.config = config;
       current.onInit(data);
-      // await (config.enterTweener, current)
+      if (config.enterTweener) {
+        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+        await tweener.execute(config.enterTweener, current.node);
+      }
       current.onEnter();
     }
   }
@@ -53,17 +56,23 @@ class UiExclusive implements IGuiExclusive {
   public async close(): Promise<void> {
     if (this._current) {
       const current = this._current;
-      //  await (current.config.exitTweener, current)
+      const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
+      const config = registry.getUiConfig(current.ui);
+      if (config.exitTweener) {
+        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
+        await tweener.execute(config.exitTweener, current.node);
+      }
       current.onExit();
-      ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY).close(current.ui, current);
+      registry.close(current.ui, current);
       this._current = null;
     }
   }
   public purge(): void {
     if (this._current) {
+      const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
       const current = this._current;
       current.onExit();
-      ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY).close(current.ui, current);
+      registry.close(current.ui, current);
       this._current = null;
     }
   }
