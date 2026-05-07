@@ -69,6 +69,8 @@ export interface IGuiConfig {
   exitTweener?: string;
   /** 是否模态弹窗（弹窗专用） */
   isModal?: boolean;
+  /** 优先级 */
+  priority?: number;
   /** 视图组件 */
   view: Constructor<IGuiView>;
 }
