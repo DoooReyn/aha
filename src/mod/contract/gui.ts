@@ -117,7 +117,7 @@ export interface IGuiNavigator {
    */
   pop(data?: unknown): Promise<void>;
   /**
-   * 清栈
+   * 清理
    */
   purge(): void;
   /**
@@ -150,7 +150,7 @@ export interface IGuiPriority {
    */
   close(force: boolean): Promise<void>;
   /**
-   * 清栈
+   * 清理
    */
   purge(): void;
 }
@@ -170,7 +170,11 @@ export interface IGuiOverlap {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: number): void;
+  enqueue(ui: string, data?: number): Promise<void>;
+  /**
+   * 清理
+   */
+  purge(): void;
   /** 当前深度 */
   get depth(): number;
 }
