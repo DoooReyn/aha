@@ -27,14 +27,20 @@ class GuiPriority implements IGuiPriority {
   private _queue: IPriorityEntry[];
   /** 加载状态锁 */
   private _loading: boolean;
+  /** 取消状态 */
+  private _canceled: boolean;
+  /** 加载中的视图 */
+  private _loadingUi: string;
 
   /**
    * @param _carrier 载体（容器）
    */
   public constructor(private readonly _carrier: Node) {
     this._current = null;
+    this._loadingUi = null;
     this._queue = [];
     this._loading = false;
+    this._canceled = false;
   }
 
   public enqueue(ui: string, data?: unknown): void {
@@ -50,8 +56,15 @@ class GuiPriority implements IGuiPriority {
       return;
     }
 
+    // 去重：正在加载中
+    if (this._loadingUi === ui) {
+      Journal.Warn(`视图 ${ui} 正在加载中`);
+      return;
+    }
+
     // 无当前视图且无加载中 → 直接加载
     if (!this._current && !this._loading) {
+      this._loadingUi = ui;
       this._load(ui, data);
       return;
     }
@@ -59,14 +72,17 @@ class GuiPriority implements IGuiPriority {
     // 入队（按优先级降序插入，同优先级保持入队顺序）
     const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
     const config = registry.getUiConfig(ui);
-    config.priority ??= 0;
-    this._insertOrdered({ ui, priority: config.priority, data });
+    const priority = config.priority ?? 0;
+    this._insertOrdered({ ui, priority, data });
   }
 
   public purge(): void {
     // 清空队列
     this._queue.length = 0;
-
+    // 如果有任务正在加载，则需要设置为取消状态
+    if (this._loading) {
+      this._canceled = true;
+    }
     // 关闭当前视图
     this.close(true);
   }
@@ -92,9 +108,18 @@ class GuiPriority implements IGuiPriority {
     const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
     const config = registry.getUiConfig(ui);
     const node = await registry.open(ui);
+    this._loading = false;
+    this._loadingUi = null;
     if (node) {
+      const view = node.acquire(config.view);
+      if (this._canceled) {
+        registry.close(ui, view);
+        this._canceled = false;
+        return;
+      }
+
+      this._current = view;
       this._carrier.addChild(node);
-      const view = (this._current = node.acquire(config.view));
       const container = node as Dict;
       view.ui = container['ui'];
       view.uiid = container['uiid'];
@@ -102,9 +127,7 @@ class GuiPriority implements IGuiPriority {
       view.onInit(data);
       // await (config.enterTweener, view)
       view.onEnter();
-      this._loading = false;
     } else {
-      this._loading = false;
       this._playNext();
     }
   }

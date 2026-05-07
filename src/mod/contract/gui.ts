@@ -143,7 +143,12 @@ export interface IGuiPriority {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: number): void;
+  enqueue(ui: string, data?: unknown): void;
+  /**
+   * 关闭当前视图
+   * @param force 是否强制关闭（跳过视图关闭动画）
+   */
+  close(force: boolean): Promise<void>;
   /**
    * 清栈
    */
