@@ -5,6 +5,7 @@ import { Journal } from '../journal';
 import { ReportType } from './contract';
 import { ISentry, ISentryAbility, ISentryError, ISentryStats, SentryErrorType } from './contract/sentry';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 哨兵能力实现
@@ -185,7 +186,7 @@ class SentryAbility implements ISentryAbility {
  */
 class Sentry extends BaseMod<SentryAbility> implements ISentry {
   public static readonly InitArgs: Parameters<Sentry['loadAbility']>;
-  public static readonly Trait: string = 'sentry';
+  public static readonly Trait: string = TRAIT.SENTRY;
   declare public dependencies: ISentry['dependencies'];
 
   protected loadAbility(): SentryAbility {

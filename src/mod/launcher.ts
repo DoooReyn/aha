@@ -4,6 +4,7 @@ import { access, time } from '../foundation';
 import { Journal } from '../journal';
 import { Build, ILauncher, ILauncherAbility, ILauncherConfig, Language } from './contract/launcher';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 启动器能力实现
@@ -234,7 +235,7 @@ class Launcher extends BaseMod<LauncherAbility> implements ILauncher {
     StageReady: 'app@stage-ready',
   };
   public static readonly InitArgs: Parameters<Launcher['loadAbility']>;
-  public static readonly Trait: string = 'launcher';
+  public static readonly Trait: string = TRAIT.LAUNCHER;
   declare public dependencies: ILauncher['dependencies'];
 
   protected loadAbility(config: Partial<ILauncherConfig>): LauncherAbility {

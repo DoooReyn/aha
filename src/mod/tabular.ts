@@ -25,6 +25,7 @@ import {
   KVValue,
 } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 类型转换器类
@@ -999,7 +1000,7 @@ class TabularAbility implements ITabularAbility {
  */
 class Tabular extends BaseMod<TabularAbility> implements ITabular {
   public static readonly InitArgs: Parameters<Tabular['loadAbility']>;
-  public static readonly Trait: string = 'tabular';
+  public static readonly Trait: string = TRAIT.TABULAR;
   declare public dependencies: ITabular['dependencies'];
 
   protected loadAbility(config: Partial<ITabularConfig> = {}): TabularAbility {

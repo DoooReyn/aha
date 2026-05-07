@@ -2,15 +2,16 @@ import { instantiate, js, Node, Prefab } from 'cc';
 
 import { time, Dict } from '../foundation';
 import { Journal } from '../journal';
-import { IGuiManifest, IGuiRegistry, IGuiRegistryAbility, IGuiViewInstance } from './contract';
+import { IGuiManifest, IGuiRegistry, IGuiRegistryAbility, IGuiView } from './contract';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 用户界面登记簿能力实现
  */
 class GuiRegistryAbility implements IGuiRegistryAbility {
   /** 视图缓存 */
-  private _caches: Map<string, IGuiViewInstance[]>;
+  private _caches: Map<string, IGuiView[]>;
   /** 视图异步加载对象 */
   private _promises: Map<string, [promise: Promise<Node>, aborted: boolean]>;
   /** 编号生成器 */
@@ -116,7 +117,7 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
     return promise;
   }
 
-  public close(ui: string, view: IGuiViewInstance): void {
+  public close(ui: string, view: IGuiView): void {
     if (ui !== view.ui) {
       Journal.Warn(`视图不匹配: ${ui} != ${view.ui}`);
       return;
@@ -192,7 +193,7 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
  */
 class GuiRegistry extends BaseMod<GuiRegistryAbility> implements IGuiRegistry {
   public static readonly InitArgs: Parameters<GuiRegistry['loadAbility']>;
-  public static readonly Trait: string = 'guiRegistry';
+  public static readonly Trait: string = TRAIT.GUI_REGISTRY;
   declare public dependencies: IGuiRegistry['dependencies'];
 
   protected loadAbility(manifest: IGuiManifest): GuiRegistryAbility {

@@ -69,14 +69,16 @@ export interface IGuiConfig {
   exitTweener?: string;
   /** 是否模态弹窗（弹窗专用） */
   isModal?: boolean;
+  /** 优先级 */
+  priority?: number;
   /** 视图组件 */
-  view: Constructor<IGuiViewInstance>;
+  view: Constructor<IGuiView>;
 }
 
 /**
  * 抢占式视图容器
  *
- * - 同时只能展示一个视图，要展示下一个视图只能先关闭上一个视图
+ * - 同时只能展示一个视图
  */
 export interface IGuiExclusive {
   /**
@@ -101,7 +103,7 @@ export interface IGuiExclusive {
  * - 永远只显示栈顶视图
  * - 一次只能执行一个操作：入栈或出栈
  * - 支持栈深度限制，超过栈深度自动清栈
- * - 栈视图需要支持 focus/blur
+ * - 栈视图需要支持对焦和失焦
  */
 export interface IGuiNavigator {
   /**
@@ -113,9 +115,9 @@ export interface IGuiNavigator {
   /**
    * 出栈
    */
-  pop(): Promise<void>;
+  pop(data?: unknown): Promise<void>;
   /**
-   * 清栈
+   * 清理
    */
   purge(): void;
   /**
@@ -132,8 +134,8 @@ export interface IGuiNavigator {
  * 优先级队列式视图容器
  *
  * - 同时只能显示一个
- * - 所有视图在内部排队（自动去重），依靠优先级决定谁优先展示
  * - 上一个视图关闭后自动展示下一个视图
+ * - 所有视图在内部排队（自动去重），依靠优先级决定下一个轮到谁展示
  */
 export interface IGuiPriority {
   /**
@@ -141,9 +143,14 @@ export interface IGuiPriority {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: number): void;
+  enqueue(ui: string, data?: unknown): void;
   /**
-   * 清栈
+   * 关闭当前视图
+   * @param force 是否强制关闭（跳过视图关闭动画）
+   */
+  close(force: boolean): Promise<void>;
+  /**
+   * 清理
    */
   purge(): void;
 }
@@ -163,7 +170,11 @@ export interface IGuiOverlap {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: number): void;
+  enqueue(ui: string, data?: number): Promise<void>;
+  /**
+   * 清理
+   */
+  purge(): void;
   /** 当前深度 */
   get depth(): number;
 }
@@ -276,7 +287,7 @@ export interface IGuiSketch {
 /**
  * UI 视图接口
  */
-export interface IGuiView<S extends IGuiSketch = {}> {
+export interface IGuiView<S extends IGuiSketch = {}> extends Component {
   /** 视图标识（自动挂载） */
   ui: string;
   /** 视图编号（自动挂载） */
@@ -292,11 +303,6 @@ export interface IGuiView<S extends IGuiSketch = {}> {
   /** 视图骨架 */
   sketch(): S;
 }
-
-/**
- * UI 视图实例
- */
-export type IGuiViewInstance<S extends IGuiSketch = {}> = IGuiView<S> & Component;
 
 /**
  * UI 栈视图接口

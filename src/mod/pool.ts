@@ -4,6 +4,7 @@ import { time } from '../foundation';
 import { Journal } from '../journal';
 import { IPool, IPoolAbility, IProject, IProjectConfig } from './contract/pool';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 对象池错误代码
@@ -297,7 +298,7 @@ class PoolAbility implements IPoolAbility {
  */
 class Pool extends BaseMod<PoolAbility> implements IPool {
   public static readonly InitArgs: Parameters<Pool['loadAbility']>;
-  public static readonly Trait: string = 'pool';
+  public static readonly Trait: string = TRAIT.POOL;
 
   protected loadAbility(): PoolAbility {
     return new PoolAbility(this);

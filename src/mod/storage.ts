@@ -4,6 +4,7 @@ import { debounce, mightSync, ChainedCipher, Dict, ICipher } from '../foundation
 import { Journal } from '../journal';
 import { IStorage, IStorageAbility, IStorageConfig, IStorageSchema } from './contract/storage';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 本地存储错误码
@@ -292,7 +293,7 @@ class StorageAbility implements IStorageAbility {
  */
 class Storage extends BaseMod<StorageAbility> implements IStorage {
   public static readonly InitArgs: Parameters<Storage['loadAbility']>;
-  public static readonly Trait: string = 'storage';
+  public static readonly Trait: string = TRAIT.STORAGE;
   declare public readonly dependencies: IStorage['dependencies'];
 
   protected loadAbility(config: IStorageConfig): StorageAbility {

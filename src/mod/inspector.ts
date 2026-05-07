@@ -3,6 +3,7 @@ import { sys } from 'cc';
 import { access } from '../foundation';
 import { CCInspectorFields, ICCInspector, ICCInspectorAbility, ICCInspectorManualField } from './contract/inspector';
 import { BaseMod } from './mod';
+import { TRAIT } from './trait';
 
 /**
  * 巡检器能力实现
@@ -74,7 +75,7 @@ class CCInspectorAbility implements ICCInspectorAbility {
  */
 class CCInspector extends BaseMod<CCInspectorAbility> implements ICCInspector {
   public static readonly InitArgs: Parameters<CCInspector['loadAbility']>;
-  public static readonly Trait: string = 'inspector';
+  public static readonly Trait: string = TRAIT.INSPECTOR;
 
   protected loadAbility(): CCInspectorAbility {
     return new CCInspectorAbility(this);
