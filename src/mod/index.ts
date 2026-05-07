@@ -17,3 +17,4 @@ export * from './auditor';
 export * from './linguist';
 export * from './cantor';
 export * from './gui-registry';
+export * from './tweener';

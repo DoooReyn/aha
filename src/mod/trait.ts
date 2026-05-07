@@ -18,6 +18,7 @@ const TRAIT = {
   SENTRY: 'sentry',
   STORAGE: 'storage',
   TABULAR: 'tabular',
+  TWEENER: 'tweener',
 } as const;
 
 export { TRAIT };

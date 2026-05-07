@@ -14,5 +14,6 @@ export * from './tabular';
 export * from './auditor';
 export * from './linguist';
 export * from './cantor';
+export * from './tweener';
 export * from './gui';
 export * from './gui-registry';
