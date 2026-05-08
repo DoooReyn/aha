@@ -3,8 +3,9 @@ import { Node } from 'cc';
 import { Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiPriority, IGuiRegistry, IGuiView, ITweener } from '../contract';
+import { IGuiPriority, IGuiRegistry, IGuiView } from '../contract';
 import { TRAIT } from '../trait';
+import { GuiContainer } from './gui-container';
 
 /** 优先级队列条目 */
 interface IPriorityEntry {
@@ -20,7 +21,7 @@ interface IPriorityEntry {
  * - 上一个视图关闭后自动展示下一个视图
  * - 所有视图在内部排队（自动去重），依靠优先级决定下一个轮到谁展示
  */
-class GuiPriority implements IGuiPriority {
+class GuiPriority extends GuiContainer implements IGuiPriority {
   /** 当前视图 */
   private _current: IGuiView | null;
   /** 等待队列（按优先级降序排列，相同优先级按入队先后） */
@@ -36,6 +37,7 @@ class GuiPriority implements IGuiPriority {
    * @param _carrier 载体（容器）
    */
   public constructor(private readonly _carrier: Node) {
+    super();
     this._current = null;
     this._loadingUi = null;
     this._queue = [];
@@ -111,27 +113,21 @@ class GuiPriority implements IGuiPriority {
     this._loading = false;
     this._loadingUi = null;
     if (node) {
-      const view = node.acquire(config.view);
+      this._carrier.addChild(node);
       if (this._canceled) {
-        registry.close(ui, view);
         this._canceled = false;
+        const view = node.acquire(config.view);
+        const container = node as Dict;
+        view.ui = container['ui'];
+        view.uiid = container['uiid'];
+        view.config = config;
+        node.active = false;
+        registry.close(ui, view);
         return;
       }
-
-      this._current = view;
-      this._carrier.addChild(node);
-      const container = node as Dict;
-      view.ui = container['ui'];
-      view.uiid = container['uiid'];
-      view.config = config;
-      view.onInit(data);
-      if (config.enterTweener) {
-        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-        await tweener.execute(config.enterTweener, view.node);
-      }
-      view.onEnter();
+      this._current = await this.attach(node, config, data);
     } else {
-      this._playNext();
+      await this._playNext();
     }
   }
 
@@ -141,15 +137,8 @@ class GuiPriority implements IGuiPriority {
       return;
     }
 
-    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
-    const view = this._current;
+    await this.detach(this._current, force);
     this._current = null;
-    if (!force && view.config.exitTweener) {
-      const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-      await tweener.execute(view.config.exitTweener, view.node);
-    }
-    view.onExit();
-    registry.close(view.ui, view);
 
     await this._playNext();
   }

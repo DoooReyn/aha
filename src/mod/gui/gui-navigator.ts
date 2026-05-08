@@ -1,10 +1,11 @@
 import { Node } from 'cc';
 
-import { list, Dict } from '../../foundation';
+import { list } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiNavigator, IGuiRegistry, IGuiStackView, ITweener } from '../contract';
+import { IGuiNavigator, IGuiRegistry, IGuiStackView } from '../contract';
 import { TRAIT } from '../trait';
+import { GuiContainer } from './gui-container';
 
 /**
  * 导航式视图容器
@@ -14,7 +15,7 @@ import { TRAIT } from '../trait';
  * - 支持栈深度限制，超过栈深度自动清栈
  * - 栈视图需要支持对焦和失焦
  */
-class GuiNavigator implements IGuiNavigator {
+class GuiNavigator extends GuiContainer implements IGuiNavigator {
   /** 加载状态 */
   private _loading: boolean;
   /** 导航栈 */
@@ -28,6 +29,7 @@ class GuiNavigator implements IGuiNavigator {
     private readonly _carrier: Node,
     public readonly maxDepth: number
   ) {
+    super();
     this._loading = false;
     this._stack = [];
   }
@@ -50,7 +52,7 @@ class GuiNavigator implements IGuiNavigator {
       const index = this._stack.findIndex((v) => v.ui === ui);
       if (index > -1) {
         for (let i = this._stack.length - 1; i > index; i--) {
-          await this._close(this._stack[i], true);
+          await this.detach(this._stack[i], true);
         }
         this._stack.length = index + 1;
         const next = this._stack[index];
@@ -80,23 +82,13 @@ class GuiNavigator implements IGuiNavigator {
       if (curr) {
         // 当前视图失焦，然后关闭
         curr.onBlur();
-        this._close(curr, false);
+        await this.detach(curr, false);
       }
 
       // 添加入栈视图
       this._carrier.addChild(node);
-      const next = node.acquire(config.view) as IGuiStackView;
-      const container = node as Dict;
-      next.ui = container['ui'];
-      next.uiid = container['uiid'];
-      next.config = config;
-      next.onInit(data);
-      if (config.enterTweener) {
-        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-        await tweener.execute(config.enterTweener, next.node);
-      }
-      next.onEnter();
-      this._stack.push(next);
+      const next = await this.attach(node, config, data);
+      this._stack.push(next as IGuiStackView);
     }
 
     // 加载完成
@@ -109,7 +101,7 @@ class GuiNavigator implements IGuiNavigator {
       const vd1 = this._stack[depth - 1];
       const vd2 = this._stack[depth - 2];
       this._stack.pop();
-      this._close(vd1, false);
+      await this.detach(vd1, false);
       if (vd2) {
         vd2.onFocus();
       }
@@ -117,7 +109,7 @@ class GuiNavigator implements IGuiNavigator {
   }
 
   public purge(): void {
-    list.each(this._stack, (view) => this._close(view, true), true);
+    list.each(this._stack, (view) => this.detach(view, true), true);
     this._stack.length = 0;
   }
 
@@ -127,16 +119,6 @@ class GuiNavigator implements IGuiNavigator {
 
   public get depth(): number {
     return this._stack.length;
-  }
-
-  private async _close(view: IGuiStackView, force: boolean) {
-    const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
-    if (!force && view.config.exitTweener) {
-      const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-      await tweener.execute(view.config.exitTweener, view.node);
-    }
-    view.onExit();
-    registry.close(view.ui, view);
   }
 }
 
