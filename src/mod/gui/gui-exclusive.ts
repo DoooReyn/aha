@@ -1,17 +1,17 @@
 import { Node } from 'cc';
 
-import { Dict } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiExclusive, IGuiRegistry, IGuiView, ITweener } from '../contract';
+import { IGuiExclusive, IGuiRegistry, IGuiView } from '../contract';
 import { TRAIT } from '../trait';
+import { GuiContainer } from './gui-container';
 
 /**
  * 抢占式视图容器
  *
  * - 同时只能展示一个视图
  */
-class UiExclusive implements IGuiExclusive {
+class GuiExclusive extends GuiContainer implements IGuiExclusive {
   /** 当前视图 */
   private _current: IGuiView;
 
@@ -19,6 +19,7 @@ class UiExclusive implements IGuiExclusive {
    * @param _carrier 载体（容器）
    */
   public constructor(private readonly _carrier: Node) {
+    super();
     this._current = null;
   }
 
@@ -30,7 +31,7 @@ class UiExclusive implements IGuiExclusive {
         return;
       }
 
-      registry.close(this._current.ui, this._current);
+      await this.detach(this._current, false);
       this._current = null;
     }
 
@@ -38,44 +39,24 @@ class UiExclusive implements IGuiExclusive {
     if (node) {
       const config = registry.getUiConfig(ui);
       this._carrier.addChild(node);
-
-      const current = (this._current = node.acquire(config.view));
-      const container = node as Dict;
-      current.ui = container['ui'];
-      current.uiid = container['uiid'];
-      current.config = config;
-      current.onInit(data);
-      if (config.enterTweener) {
-        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-        await tweener.execute(config.enterTweener, current.node);
-      }
-      current.onEnter();
+      this._current = await this.attach(node, config, data);
     }
   }
 
   public async close(): Promise<void> {
     if (this._current) {
-      const current = this._current;
-      const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
-      const config = registry.getUiConfig(current.ui);
-      if (config.exitTweener) {
-        const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
-        await tweener.execute(config.exitTweener, current.node);
-      }
-      current.onExit();
-      registry.close(current.ui, current);
+      await this.detach(this._current, false);
       this._current = null;
     }
   }
+
   public purge(): void {
     if (this._current) {
-      const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
       const current = this._current;
-      current.onExit();
-      registry.close(current.ui, current);
       this._current = null;
+      this.detach(current, true).then(() => {});
     }
   }
 }
 
-export { UiExclusive };
+export { GuiExclusive };
