@@ -1,9 +1,10 @@
 import { Component, Node } from 'cc';
 
 import { Constructor } from '../../foundation';
+import { IAbility, IMod } from './mod';
 
 /**
- * UI 分层规划
+ * GUI 分层规划
  */
 export enum GuiLayers {
   /** 活动层（一级界面） */
@@ -197,14 +198,14 @@ export interface IGuiSnapshotBackup {
 }
 
 /**
- * UI 快照数据
+ * GUI 快照数据
  */
 export interface IGuiSnapshotData {
   [key: string]: unknown;
 }
 
 /**
- * UI 快照
+ * GUI 快照
  */
 export interface IGuiSnapshot<S extends IGuiSnapshotData> {
   /** 快照编号 */
@@ -216,7 +217,7 @@ export interface IGuiSnapshot<S extends IGuiSnapshotData> {
 }
 
 /**
- * UI 层级代理接口
+ * GUI 层级代理接口
  */
 export interface IGuiAgent {
   /** 载体 */
@@ -285,7 +286,7 @@ export interface IGuiSketch {
 }
 
 /**
- * UI 视图接口
+ * GUI 视图接口
  */
 export interface IGuiView<S extends IGuiSketch = {}> extends Component {
   /** 视图标识（自动挂载） */
@@ -305,11 +306,48 @@ export interface IGuiView<S extends IGuiSketch = {}> extends Component {
 }
 
 /**
- * UI 栈视图接口
+ * GUI 栈视图接口
  */
 export interface IGuiStackView extends IGuiView {
   /** 视图对焦回调 */
   onFocus(): void;
   /** 视图失焦回调 */
   onBlur(): void;
+}
+
+/**
+ * GUI 能力接口
+ */
+export interface IGuiAbility extends IAbility {
+  /** 活动层代理 */
+  readonly screen: IGuiScreenAgent;
+  /** 窗口层代理 */
+  readonly window: IGuiWindowAgent;
+  /** 遮罩层代理 */
+  readonly mask: IGuiMaskAgent;
+  /** 弹窗层代理 */
+  readonly popup: IGuiPopupAgent;
+  /** 引导层代理 */
+  readonly guide: IGuiGuideAgent;
+  /** 滚动提示层代理 */
+  readonly marquee: IGuiMarqueeAgent;
+  /** 浮动提示层代理 */
+  readonly toast: IGuiToastAgent;
+  /** 通知提示层代理 */
+  readonly notification: IGuiNotificationAgent;
+  /** 加载层代理 */
+  readonly loading: IGuiLoadingAgent;
+  /** 警告层代理 */
+  readonly alert: IGuiAlertAgent;
+}
+
+/**
+ * GUI 模块接口
+ *
+ * - 提供 GUI 系统的核心功能和服务
+ * - 管理视图配置清单、视图实例、视图容器等
+ * - 负责协调不同层级和类型的视图展示和交互
+ */
+export interface IGui extends IMod {
+  get ability(): IGuiAbility;
 }
