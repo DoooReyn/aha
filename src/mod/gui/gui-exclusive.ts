@@ -16,9 +16,9 @@ class GuiExclusive extends GuiContainer implements IGuiExclusive {
   private _current: IGuiView;
 
   /**
-   * @param _carrier 载体（容器）
+   * @param carrier 载体（容器）
    */
-  public constructor(private readonly _carrier: Node) {
+  public constructor(public readonly carrier: Node) {
     super();
     this._current = null;
   }
@@ -38,7 +38,7 @@ class GuiExclusive extends GuiContainer implements IGuiExclusive {
     const node = await registry.open(ui);
     if (node) {
       const config = registry.getUiConfig(ui);
-      this._carrier.addChild(node);
+      this.carrier.addChild(node);
       this._current = await this.attach(node, config, data);
     }
   }
@@ -50,12 +50,16 @@ class GuiExclusive extends GuiContainer implements IGuiExclusive {
     }
   }
 
-  public purge(): void {
+  public async purge(): Promise<void> {
     if (this._current) {
       const current = this._current;
       this._current = null;
-      this.detach(current, true).then(() => {});
+      await this.detach(current, true);
     }
+  }
+
+  public get top() {
+    return this._current;
   }
 }
 

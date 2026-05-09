@@ -34,9 +34,9 @@ class GuiPriority extends GuiContainer implements IGuiPriority {
   private _loadingUi: string;
 
   /**
-   * @param _carrier 载体（容器）
+   * @param carrier 载体（容器）
    */
-  public constructor(private readonly _carrier: Node) {
+  public constructor(public readonly carrier: Node) {
     super();
     this._current = null;
     this._loadingUi = null;
@@ -45,7 +45,7 @@ class GuiPriority extends GuiContainer implements IGuiPriority {
     this._canceled = false;
   }
 
-  public enqueue(ui: string, data?: unknown): void {
+  public async open(ui: string, data?: unknown): Promise<void> {
     // 去重：当前正在展示
     if (this._current && this._current.ui === ui) {
       Journal.Warn(`视图 ${ui} 已打开`);
@@ -67,7 +67,7 @@ class GuiPriority extends GuiContainer implements IGuiPriority {
     // 无当前视图且无加载中 → 直接加载
     if (!this._current && !this._loading) {
       this._loadingUi = ui;
-      this._load(ui, data);
+      await this._load(ui, data);
       return;
     }
 
@@ -113,7 +113,7 @@ class GuiPriority extends GuiContainer implements IGuiPriority {
     this._loading = false;
     this._loadingUi = null;
     if (node) {
-      this._carrier.addChild(node);
+      this.carrier.addChild(node);
       if (this._canceled) {
         this._canceled = false;
         const view = node.acquire(config.view);
@@ -141,6 +141,10 @@ class GuiPriority extends GuiContainer implements IGuiPriority {
     this._current = null;
 
     await this._playNext();
+  }
+
+  public get top() {
+    return this._current;
   }
 
   /** 从队列头部取出下一个并加载 */

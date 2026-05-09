@@ -1,9 +1,8 @@
 import { Node } from 'cc';
 
-import { list } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
-import { IGuiNavigator, IGuiRegistry, IGuiStackView } from '../contract';
+import { IGuiNavigator, IGuiRegistry, IGuiView } from '../contract';
 import { TRAIT } from '../trait';
 import { GuiContainer } from './gui-container';
 
@@ -19,14 +18,14 @@ class GuiNavigator extends GuiContainer implements IGuiNavigator {
   /** 加载状态 */
   private _loading: boolean;
   /** 导航栈 */
-  private _stack: IGuiStackView[];
+  private _stack: IGuiView[];
 
   /**
-   * @param _carrier 载体（容器）
+   * @param carrier 载体（容器）
    * @param maxDepth 最大深度
    */
   public constructor(
-    private readonly _carrier: Node,
+    public readonly carrier: Node,
     public readonly maxDepth: number
   ) {
     super();
@@ -34,7 +33,7 @@ class GuiNavigator extends GuiContainer implements IGuiNavigator {
     this._stack = [];
   }
 
-  public async push(ui: string, data?: unknown): Promise<void> {
+  public async open(ui: string, data?: unknown): Promise<void> {
     if (this._loading) return;
 
     const curr = this._stack[this._stack.length - 1];
@@ -86,16 +85,16 @@ class GuiNavigator extends GuiContainer implements IGuiNavigator {
       }
 
       // 添加入栈视图
-      this._carrier.addChild(node);
+      this.carrier.addChild(node);
       const next = await this.attach(node, config, data);
-      this._stack.push(next as IGuiStackView);
+      this._stack.push(next);
     }
 
     // 加载完成
     this._loading = false;
   }
 
-  public async pop(): Promise<void> {
+  public async close(): Promise<void> {
     const depth = this.depth;
     if (depth > 0) {
       const vd1 = this._stack[depth - 1];
@@ -108,12 +107,15 @@ class GuiNavigator extends GuiContainer implements IGuiNavigator {
     }
   }
 
-  public purge(): void {
-    list.each(this._stack, (view) => this.detach(view, true), true);
+  public async purge(): Promise<void> {
+    const stack = this._stack.slice();
     this._stack.length = 0;
+    for (let i = stack.length - 1; i >= 0; i--) {
+      await this.detach(stack[i], true);
+    }
   }
 
-  public get top(): IGuiStackView {
+  public get top() {
     return this._stack[this._stack.length - 1];
   }
 

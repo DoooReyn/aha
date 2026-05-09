@@ -1,6 +1,5 @@
 import { js, Node } from 'cc';
 
-import { list } from '../../foundation';
 import { ioc } from '../../ioc';
 import { Journal } from '../../journal';
 import { IGuiOverlap, IGuiRegistry, IGuiView } from '../contract';
@@ -23,16 +22,16 @@ class GuiOverlap extends GuiContainer implements IGuiOverlap {
   private _idg: js.IDGenerator;
 
   public constructor(
-    private readonly _carrier: Node,
+    public readonly carrier: Node,
     public readonly maxDepth: number
   ) {
     super();
     this._overlap = [];
     this._loading = new Map();
-    this._idg = new js.IDGenerator(`overlap_${this._carrier.name}`);
+    this._idg = new js.IDGenerator(`overlap_${this.carrier.name}`);
   }
 
-  public async enqueue(ui: string, data?: number): Promise<void> {
+  public async open(ui: string, data?: unknown): Promise<void> {
     const registry = ioc.resolve<IGuiRegistry>(TRAIT.GUI_REGISTRY);
     const config = registry.getUiConfig(ui);
     const id = this._idg.getNewId();
@@ -50,17 +49,31 @@ class GuiOverlap extends GuiContainer implements IGuiOverlap {
       }
 
       // 添加到队列
-      this._carrier.addChild(node);
+      this.carrier.addChild(node);
       const next = await this.attach(node, config, data);
       this._overlap.push(next);
     }
     this._loading.delete(id);
   }
 
-  public purge(): void {
+  public async close() {
+    const depth = this.depth;
+    if (depth > 0) {
+      const view = this._overlap.pop();
+      await this.detach(view, false);
+    }
+  }
+
+  public get top() {
+    return this._overlap[this._overlap.length - 1];
+  }
+
+  public async purge(): Promise<void> {
     const overlap = this._overlap.slice();
     this._overlap.length = 0;
-    list.each(overlap, (view) => this.detach(view, true), true);
+    for (let i = overlap.length - 1; i >= 0; i--) {
+      await this.detach(overlap[i], true);
+    }
   }
 
   public get depth(): number {
