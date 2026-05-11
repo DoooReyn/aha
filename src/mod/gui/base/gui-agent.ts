@@ -1,10 +1,10 @@
 import { Node } from 'cc';
 
-import { Dict } from '../../foundation';
-import { ioc } from '../../ioc';
-import { Journal } from '../../journal';
-import { GuiLayers, IGuiConfig, IGuiRegistry, IGuiView, ITweener } from '../contract';
-import { TRAIT } from '../trait';
+import { Dict } from '../../../foundation';
+import { ioc } from '../../../ioc';
+import { Journal } from '../../../journal';
+import { GuiLayers, IGuiConfig, IGuiRegistry, IGuiView, ITweener } from '../../contract';
+import { TRAIT } from '../../trait';
 
 /**
  * 视图代理
@@ -44,7 +44,8 @@ class GuiAgentBase {
    * @param data 数据
    * @returns 视图
    */
-  protected async attach(node: Node, config: IGuiConfig, data?: unknown): Promise<IGuiView> {
+  protected async attach(carrier: Node, node: Node, config: IGuiConfig, data?: unknown): Promise<IGuiView> {
+    carrier.addChild(node);
     const view = node.acquire(config.view);
     const container = node as Dict;
     view.ui = container['ui'];
@@ -87,7 +88,7 @@ class GuiAgentBase {
       const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
       await tweener.execute(view.config.enterTweener, view.node);
     }
-    view?.onFocus();
+    view.onFocus?.();
   }
 
   protected async blur(view: IGuiView): Promise<void> {
@@ -97,7 +98,7 @@ class GuiAgentBase {
       const tweener = ioc.resolve<ITweener>(TRAIT.TWEENER);
       await tweener.execute(view.config.exitTweener, view.node);
     }
-    view?.onBlur();
+    view.onBlur?.();
     view.node.removeFromParent();
   }
 }

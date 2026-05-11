@@ -307,7 +307,7 @@ export interface IGuiScreenAgent extends IGuiAgent {}
 export interface IGuiWindowAgent extends IGuiAgent {}
 
 /**
- * HUD 代理
+ * HUD 层代理
  */
 export interface IGuiHudAgent extends IGuiAgent {}
 
@@ -315,3 +315,33 @@ export interface IGuiHudAgent extends IGuiAgent {}
  * 弹窗代理
  */
 export interface IGuiPopupAgent extends IGuiAgent {}
+
+/**
+ * 引导层代理
+ */
+export interface IGuiGuideAgent extends IGuiAgent {}
+
+/**
+ * 滚动提示层代理
+ */
+export interface IGuiMarqueeAgent extends IGuiAgent {}
+
+/**
+ * 浮动提示层代理
+ */
+export interface IGuiToastAgent extends IGuiAgent {}
+
+/**
+ * 通知层代理
+ */
+export interface IGuiNotificationAgent extends IGuiAgent {}
+
+/**
+ * 加载层代理
+ */
+export interface IGuiLoadingAgent extends IGuiAgent {}
+
+/**
+ * 警告层代理
+ */
+export interface IGuiAlertAgent extends IGuiAgent {}
