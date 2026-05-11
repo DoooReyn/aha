@@ -1,17 +1,20 @@
 import { Component, Node } from 'cc';
 
 import { Constructor } from '../../foundation';
+import { IGuiRegistryAbility } from './gui-registry';
+import { ILauncherAbility } from './launcher';
+import { IAbility, IMod } from './mod';
 
 /**
- * UI 分层规划
+ * GUI 分层规划
  */
 export enum GuiLayers {
   /** 活动层（一级界面） */
   Screen,
   /** 窗口层（二级界面） */
   Window,
-  /** 遮罩层（可复用） */
-  Mask,
+  /** HUD 层（一般指资源栏等） */
+  Hud,
   /** 弹窗层（普通弹窗） */
   Popup,
   /** 引导层（新手引导） */
@@ -59,6 +62,8 @@ export interface IGuiManifest {
 export interface IGuiConfig {
   /** 资源标识符 */
   uri: string;
+  /** 所属层级 */
+  layer: GuiLayers;
   /** 最长存活时间 */
   uptime: GuiCacheUptime;
   /** 最多缓存实例（默认 1 个） */
@@ -92,9 +97,13 @@ export interface IGuiExclusive {
    */
   close(): Promise<void>;
   /**
+   * 顶层视图
+   */
+  get top(): IGuiView;
+  /**
    * 清理（约等于关闭，但是不带退出动画）
    */
-  purge(): void;
+  purge(): Promise<void>;
 }
 
 /**
@@ -111,19 +120,19 @@ export interface IGuiNavigator {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  push(ui: string, data?: unknown): Promise<void>;
+  open(ui: string, data?: unknown): Promise<void>;
   /**
    * 出栈
    */
-  pop(data?: unknown): Promise<void>;
+  close(data?: unknown): Promise<void>;
   /**
    * 清理
    */
-  purge(): void;
+  purge(): Promise<void>;
   /**
    * 栈顶视图
    */
-  get top(): IGuiStackView;
+  get top(): IGuiView;
   /**
    * 当前深度
    */
@@ -143,12 +152,16 @@ export interface IGuiPriority {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: unknown): void;
+  open(ui: string, data?: unknown): Promise<void>;
   /**
    * 关闭当前视图
    * @param force 是否强制关闭（跳过视图关闭动画）
    */
   close(force: boolean): Promise<void>;
+  /**
+   * 顶层视图
+   */
+  get top(): IGuiView;
   /**
    * 清理
    */
@@ -170,112 +183,22 @@ export interface IGuiOverlap {
    * @param ui 标识
    * @param data 数据（可选）
    */
-  enqueue(ui: string, data?: number): Promise<void>;
+  open(ui: string, data?: unknown): Promise<void>;
+  /**
+   * 出列
+   */
+  close(): Promise<void>;
   /**
    * 清理
    */
-  purge(): void;
+  purge(): Promise<void>;
+  /**
+   * 顶层视图
+   */
+  get top(): IGuiView;
   /** 当前深度 */
   get depth(): number;
 }
-
-/**
- * GUI 快照备份中心
- */
-export interface IGuiSnapshotBackup {
-  /**
-   * 存入快照
-   * @param sid 编号
-   * @param snapshot 快照
-   */
-  deposit(sid: string, snapshot: IGuiSnapshotData): void;
-  /**
-   * 取出快照
-   * @param sid 编号
-   */
-  withdraw<S extends IGuiSnapshotData>(sid: string): S;
-}
-
-/**
- * UI 快照数据
- */
-export interface IGuiSnapshotData {
-  [key: string]: unknown;
-}
-
-/**
- * UI 快照
- */
-export interface IGuiSnapshot<S extends IGuiSnapshotData> {
-  /** 快照编号 */
-  get sid(): string;
-  /** 创建快照 */
-  create(): S;
-  /** 使用快照恢复 */
-  recover(snapshot: S): void;
-}
-
-/**
- * UI 层级代理接口
- */
-export interface IGuiAgent {
-  /** 载体 */
-  readonly carrier: Node;
-  /** 所属层级 */
-  readonly layer: GuiLayers;
-  /** 关闭所有视图 */
-  purge(): void;
-}
-
-/**
- * 活动层代理接口
- */
-export interface IGuiScreenAgent extends IGuiAgent {}
-
-/**
- * 窗口层代理接口
- */
-export interface IGuiWindowAgent extends IGuiAgent {}
-
-/**
- * 遮罩层代理接口
- */
-export interface IGuiMaskAgent extends IGuiAgent {}
-
-/**
- * 弹窗层代理接口
- */
-export interface IGuiPopupAgent extends IGuiAgent {}
-
-/**
- * 引导层代理接口
- */
-export interface IGuiGuideAgent extends IGuiAgent {}
-
-/**
- * 滚动提示层代理接口
- */
-export interface IGuiMarqueeAgent extends IGuiAgent {}
-
-/**
- * 浮动提示层代理接口
- */
-export interface IGuiToastAgent extends IGuiAgent {}
-
-/**
- * 通知提示层代理接口
- */
-export interface IGuiNotificationAgent extends IGuiAgent {}
-
-/**
- * 加载层代理接口
- */
-export interface IGuiLoadingAgent extends IGuiAgent {}
-
-/**
- * 警告层代理接口
- */
-export interface IGuiAlertAgent extends IGuiAgent {}
 
 /**
  * 视图骨架
@@ -285,7 +208,7 @@ export interface IGuiSketch {
 }
 
 /**
- * UI 视图接口
+ * GUI 视图接口
  */
 export interface IGuiView<S extends IGuiSketch = {}> extends Component {
   /** 视图标识（自动挂载） */
@@ -294,22 +217,131 @@ export interface IGuiView<S extends IGuiSketch = {}> extends Component {
   uiid: string;
   /** 视图配置（自动挂载） */
   config: Readonly<IGuiConfig>;
-  /** 轻量初始化回调 */
-  onInit(data?: unknown): void;
-  /** 视图进入回调 */
-  onEnter(): void;
-  /** 视图退出回调 */
-  onExit(): void;
   /** 视图骨架 */
   sketch(): S;
+  /** 轻量初始化回调 */
+  onInit(data?: unknown): void;
+  /** 视图动画进入 */
+  onTransitionEnter?(): Promise<void>;
+  /** 视图进入回调 */
+  onEnter(): void;
+  /** 视图动画退出 */
+  onTransitionExit?(): Promise<void>;
+  /** 视图退出回调 */
+  onExit(): void;
+  /** 视图对焦回调 */
+  onFocus?(): void;
+  /** 视图失焦回调 */
+  onBlur?(): void;
 }
 
 /**
- * UI 栈视图接口
+ * GUI 能力接口
  */
-export interface IGuiStackView extends IGuiView {
-  /** 视图对焦回调 */
-  onFocus(): void;
-  /** 视图失焦回调 */
-  onBlur(): void;
+export interface IGuiAbility extends IAbility {
+  /**
+   * 打开视图
+   * @param ui 视图标识
+   * @param data 数据
+   */
+  open(ui: string, data: unknown): Promise<void>;
+  /**
+   * 执行一次返回
+   * @param layer 视图层级
+   */
+  back(layer: GuiLayers): Promise<void>;
 }
+
+/**
+ * GUI 模块接口
+ *
+ * - 提供 GUI 系统的核心功能和服务
+ * - 管理视图配置清单、视图实例、视图容器等
+ * - 负责协调不同层级和类型的视图展示和交互
+ */
+export interface IGui extends IMod {
+  get ability(): IGuiAbility;
+  dependencies: { launcher: ILauncherAbility; guiRegistry: IGuiRegistryAbility };
+}
+
+/**
+ * 视图界面代理
+ */
+export interface IGuiAgent {
+  /** 视图所属层级 */
+  readonly layer: GuiLayers;
+  /** 视图容器 */
+  readonly carrier: Node;
+  /**
+   * 打开视图
+   * @param ui 视图标识
+   * @param data 数据
+   */
+  open(ui: string, data: unknown): Promise<void>;
+  /**
+   * 返回
+   */
+  back(): Promise<void>;
+  /**
+   * 清空
+   */
+  purge(): Promise<void>;
+  /**
+   * 顶层视图
+   */
+  get top(): IGuiView | null;
+  /**
+   * 视图个数
+   */
+  get size(): number;
+}
+
+/**
+ * 一级界面代理
+ */
+export interface IGuiScreenAgent extends IGuiAgent {}
+
+/**
+ * 二级界面代理
+ */
+export interface IGuiWindowAgent extends IGuiAgent {}
+
+/**
+ * HUD 层代理
+ */
+export interface IGuiHudAgent extends IGuiAgent {}
+
+/**
+ * 弹窗代理
+ */
+export interface IGuiPopupAgent extends IGuiAgent {}
+
+/**
+ * 引导层代理
+ */
+export interface IGuiGuideAgent extends IGuiAgent {}
+
+/**
+ * 滚动提示层代理
+ */
+export interface IGuiMarqueeAgent extends IGuiAgent {}
+
+/**
+ * 浮动提示层代理
+ */
+export interface IGuiToastAgent extends IGuiAgent {}
+
+/**
+ * 通知层代理
+ */
+export interface IGuiNotificationAgent extends IGuiAgent {}
+
+/**
+ * 加载层代理
+ */
+export interface IGuiLoadingAgent extends IGuiAgent {}
+
+/**
+ * 警告层代理
+ */
+export interface IGuiAlertAgent extends IGuiAgent {}

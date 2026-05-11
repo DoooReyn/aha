@@ -89,19 +89,18 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
     // 从本地加载
     const cache = this.mod.dependencies.resCache;
     const dynamic = this.mod.dependencies.resDynamic;
-    const promise = new Promise<Node>(async (res) => {
-      const prefab = await dynamic.load(uri, Prefab);
+    const promise = dynamic.load(uri, Prefab).then((prefab) => {
       const aborted = this._promises.get(ui)[1];
       this._promises.delete(ui);
 
       if (aborted) {
         Journal.Warn(`视图 ${ui} 加载被中断`);
-        return res(null);
+        return null;
       }
 
       if (!prefab) {
         Journal.Warn(`加载 ${ui} 视图资产失败`);
-        return res(null);
+        return null;
       }
 
       const node = instantiate(prefab);
@@ -110,7 +109,7 @@ class GuiRegistryAbility implements IGuiRegistryAbility {
       container['uiid'] = this._idg.getNewId();
       cache.borrow(prefab);
 
-      return res(node);
+      return node;
     });
     this._promises.set(ui, [promise, false]);
 
